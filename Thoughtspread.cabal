@@ -1,0 +1,32 @@
+name:               Thoughtspread
+version:            1.0.0
+cabal-version:      >= 1.8
+build-type:         Simple
+
+executable          Thoughtspread
+  main-is:          Main.hs
+  other-Modules:    PRAC.Logic
+                  , PRAC.Utils
+                  , PRAC.App
+                  , PRAC.Page.Theme
+  extensions:       EmptyDataDecls
+                  , FlexibleContexts
+                  , FunctionalDependencies
+                  , GeneralizedNewtypeDeriving
+                  , MultiParamTypeClasses
+                  , OverloadedStrings
+                  , DeriveGeneric
+                  , QuasiQuotes
+                  , RecordWildCards
+                  , TemplateHaskell
+                  , TypeFamilies
+  build-depends:    base
+                  , transformers
+                  , bytestring
+                  , cryptohash
+                  , blaze-markup
+                  , yesod
+                  , yesod-static
+                  , text
+
+  ghc-options:    -fwarn-tabs -threaded -O2 -rtsopts -with-rtsopts=-N

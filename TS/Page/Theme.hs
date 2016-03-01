@@ -3,11 +3,11 @@ import TS.Utils
 import TS.App
 import Yesod
 
-pageTheme :: WidgetT App IO ()
+pageTheme :: WidgetT TS IO ()
 pageTheme = do
         setTitle "Thoughtspread"
         toWidgetHead
-            [hamlet|<link rel="icon" type="image/x-icon" href="@{ResourceR favicon_ico}"/>|]
+            [hamlet|<link rel="icon" type="image/x-icon" href="@{ResourceR icon_png}"/>|]
         toWidgetHead
             [lucius|
                 body {

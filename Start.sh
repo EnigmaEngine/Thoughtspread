@@ -1,1 +1,1 @@
-sudo stack exec Thoughtspread 2>&1 | tee -a server.log
+sudo stack exec Thoughtspread --allow-different-user 2>&1 | tee -a server.log

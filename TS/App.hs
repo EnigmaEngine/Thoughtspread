@@ -4,11 +4,11 @@ import Yesod
 
 staticFiles "Resources/"
 
-data TS = TS
+data TS = TS {src :: Static}
 
 mkYesodData "TS" [parseRoutes|
 / HomeR GET
-/src ResourceR Static resource
+/src ResourceR Static src
 |]
 
-instance Yesod App
+instance Yesod TS

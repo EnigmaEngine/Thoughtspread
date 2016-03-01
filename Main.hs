@@ -9,18 +9,16 @@ import TS.Page.Theme
 
 mkYesodDispatch "TS" [parseRoutes|
 / HomeR GET
-/src ResourceR Static resource
+/src ResourceR Static src
 |]
 
 getHomeR :: Handler Html
 getHomeR =
     defaultLayout $ do
         pageTheme
-        
+
 
 main :: IO ()
 main = do
     res <- static "Resources/"
-    clubLst <- decodeFile "clubData.yaml"
-    clubMap <- newIORef (clubsToMap $ fromJust clubLst)
-    warp 80 App {clubM = clubMap, resource = res}
+    warp 80 TS {src = res}

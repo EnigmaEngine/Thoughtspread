@@ -5,10 +5,10 @@ build-type:         Simple
 
 executable          Thoughtspread
   main-is:          Main.hs
-  other-Modules:    PRAC.Logic
-                  , PRAC.Utils
-                  , PRAC.App
-                  , PRAC.Page.Theme
+  other-Modules:    TS.Logic
+                  , TS.Utils
+                  , TS.App
+                  , TS.Page.Theme
   extensions:       EmptyDataDecls
                   , FlexibleContexts
                   , FunctionalDependencies

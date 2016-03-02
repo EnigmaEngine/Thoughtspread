@@ -8,7 +8,9 @@ executable          Thoughtspread
   other-Modules:    TS.Logic
                   , TS.Utils
                   , TS.App
+                  , TS.Page.Home
                   , TS.Page.Theme
+                  , TS.Page.Caesar
   extensions:       EmptyDataDecls
                   , FlexibleContexts
                   , FunctionalDependencies

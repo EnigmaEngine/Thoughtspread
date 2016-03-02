@@ -17,12 +17,24 @@ pageTheme = do
                     margin: auto;
                     width: 60%;
                     text-align: center;
-                    font-family: "Comic Sans MS", sans-serif;
+                    font-family: sans-serif;
                     background-color: rgba(85, 85, 85, 0.4);
-                    border: 10px dashed white;
+                    border: 5px dashed white;
                     padding: 10px;
-                    p {
-                        font-size: 95%;
+                }
+                .formTheme {
+                    line-height: 200%;
+                    label, input, select, textarea {
+                        margin: auto;
+                        width: 60%;
+                        display: block;
+                    }
+                    input, select {
+                        width: 15%;
+                    }
+                    textarea {
+                        resize: none;
+                        height: 5em;
                     }
                 }
             |]

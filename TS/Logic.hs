@@ -1,4 +1,5 @@
 module TS.Logic where
 import TS.Utils
 
---This is a file for all of this website's serverside logic.
+caesarShift sft = map ((drop (sft `mod` length ascii) (cycle ascii) !!) . subtract 32 . ord)
+  where ascii = [' '..'~']

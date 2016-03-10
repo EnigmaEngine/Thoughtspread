@@ -21,7 +21,7 @@ type alias Model = { current : Pos, target : Pos, rotation : Float, playerPath :
 
 type alias Input = { click : Pos, shifted : Bool, enter : Bool, adjSpeed : Int}
 
-init = Model (0,0) (0,0) 0.0 [] (0,0) False 5
+init = Model (25,25) (25,25) 0.0 [] (0,0) False 5
 
 modelState : Signal Model
 modelState = Signal.foldp update init input

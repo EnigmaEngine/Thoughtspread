@@ -1,5 +1,5 @@
 name:               Thoughtspread
-version:            1.0.0
+version:            1.0.1
 cabal-version:      >= 1.8
 build-type:         Simple
 
@@ -11,6 +11,7 @@ executable          Thoughtspread
                   , TS.Page.Home
                   , TS.Page.Theme
                   , TS.Page.Caesar
+                  , TS.Page.YoYo
   extensions:       EmptyDataDecls
                   , FlexibleContexts
                   , FunctionalDependencies

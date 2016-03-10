@@ -1,3 +1,6 @@
+elm-package.json
+elm-stuff/
+Resources/yoyo.html
 stack.yaml
 client_session_key.aes
 server.log

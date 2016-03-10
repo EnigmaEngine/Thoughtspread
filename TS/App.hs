@@ -10,6 +10,7 @@ mkYesodData "TS" [parseRoutes|
 / HomeR GET
 /caesar CaesarR GET
 /caesar/result CResultR POST
+/crazyYoYo YoYoR GET
 /src ResourceR Static src
 |]
 

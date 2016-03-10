@@ -7,14 +7,21 @@ import Yesod
 import TS.Page.Theme
 import TS.Page.Home
 import TS.Page.Caesar
+import TS.Page.YoYo
 
 
 mkYesodDispatch "TS" [parseRoutes|
 / HomeR GET
 /caesar CaesarR GET
 /caesar/result CResultR POST
+/crazyYoYo YoYoR GET
 /src ResourceR Static src
 |]
+
+getYoYoR :: Handler Html
+getYoYoR = defaultLayout $ do
+        pageTheme
+        yoyoPage
 
 getCaesarR :: Handler Html
 getCaesarR = do

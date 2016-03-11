@@ -11,7 +11,7 @@ fromJust x = case x of
     Just y -> y
     Nothing -> Debug.crash "WAT DIJA DO!?"
 
-speedRange = (1,10)
+speedRange = (1,20)
 
 delta = Signal.map inSeconds (fps 60)
 
@@ -69,6 +69,9 @@ view (w,h) player =
       dots = List.map (\x -> circle 3 |> filled (rgb 255 100 0) |> move (normalize x)) fullPath
   in
     collage w h ([background,lines] ++ dots ++ [yoyo])
+
+port title : String
+port title = "Thoughtspread"
 
 main : Signal Element
 main = Signal.map2 view Window.dimensions modelState

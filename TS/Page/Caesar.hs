@@ -13,7 +13,7 @@ caesarForm =
 
 submitSuccess :: CSubmission -> WidgetT TS IO ()
 submitSuccess (CSubmission op msg key) = do
-    let res = pack $ caesarShift (if op then key else negate key) (unpack msg)
+    let res = pack $ caesarShift (if op then key else negate key) (filterChars $ unpack msg)
     [whamlet|
       <div .mTheme>
           <h1>Result

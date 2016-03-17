@@ -12,6 +12,8 @@ executable          Thoughtspread
                   , TS.Page.Theme
                   , TS.Page.Caesar
                   , TS.Page.YoYo
+                  , TS.Page.PRAC
+                  , TS.Page.PRACResults
   extensions:       EmptyDataDecls
                   , FlexibleContexts
                   , FunctionalDependencies
@@ -28,6 +30,7 @@ executable          Thoughtspread
                   , bytestring
                   , cryptohash
                   , blaze-markup
+                  , yaml
                   , yesod
                   , yesod-static
                   , text

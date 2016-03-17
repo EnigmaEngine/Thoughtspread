@@ -11,8 +11,8 @@ caesarForm =
      <*> (unTextarea <$> areq textareaField "Please enter a message: " Nothing)
      <*> areq intField "Please enter the message key: " Nothing
 
-submitSuccess :: CSubmission -> WidgetT TS IO ()
-submitSuccess (CSubmission op msg key) = do
+caesarSubmitSuccess :: CSubmission -> WidgetT TS IO ()
+caesarSubmitSuccess (CSubmission op msg key) = do
     let res = pack $ caesarShift (if op then key else negate key) (filterChars $ unpack msg)
     [whamlet|
       <div .mTheme>

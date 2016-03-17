@@ -1,2 +1,2 @@
 #!/bin/sh
-stack exec Thoughtspread --allow-different-user >> server.log 2>&1
+stack exec Thoughtspread --allow-different-user 2>&1 | tee -a server.log 

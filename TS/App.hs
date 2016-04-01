@@ -1,10 +1,57 @@
 module TS.App where
-import TS.Utils
+--import TS.Utils
+import Database.Persist
+import Database.Persist.TH
+import Database.Persist.Sqlite
+import Data.Text (Text, pack, unpack)
+import Yesod.Static
 import Yesod
 
 staticFiles "Resources/"
 
-data TS = TS {clubM :: IORef ClubMap, src :: Static}
+--clubM :: IORef ClubMap
+data TS = TS {src :: Static, connPool :: ConnectionPool}
+
+--Constants
+openConnectionCount = 4
+
+--Data Types
+--Add clubMap rather than club, use nestled types?
+share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+Student
+    name Text
+    grade Int
+    choices [Text]
+    deriving Show Read
+Club
+    name Text
+    minSize Int
+    maxSize Int
+    deriving Show Read Eq
+|]
+
+type Result = ([(Text,[Student])], [Student])
+
+type ClubMap = [(Text, (Int,Int))]
+
+data CSubmission = CSubmission {operation :: Bool, msg :: Text, key :: Int}
+
+data FStudent = FStudent { sN  :: Text, sG  :: Int, sC1 :: Text, sC2 :: Text, sC3 :: Text}
+
+--Instances
+instance FromJSON Club where
+    parseJSON (Object v) = Club <$> v .: "name" <*> v .: "minSize" <*> v .: "maxSize"
+    parseJSON invalid = fail $ "Failed to parse: " ++ show invalid
+
+instance ToJSON FStudent where
+    toJSON (FStudent n g f s t) = object ["name" .= n, "grade" .= g, "1st" .= f, "2nd" .= s, "3rd" .= t]
+
+instance FromJSON FStudent where
+    parseJSON (Object v) = FStudent <$> v .: "name" <*> v .: "grade" <*> v .: "1st" <*> v .: "2nd" <*> v .: "3rd"
+    parseJSON invalid = fail $ "Failed to parse: " ++ show invalid
+
+instance Eq Student where
+    (==) (Student n1 g1 _) (Student n2 g2 _) = n1 == n2 && g1 ==g2
 
 mkYesodData "TS" [parseRoutes|
 / HomeR GET

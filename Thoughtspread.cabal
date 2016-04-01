@@ -25,14 +25,20 @@ executable          Thoughtspread
                   , RecordWildCards
                   , TemplateHaskell
                   , TypeFamilies
+                  , GADTs
   build-depends:    base
                   , transformers
+                  , resourcet
+                  , monad-logger
                   , bytestring
                   , cryptohash
                   , blaze-markup
                   , yaml
                   , yesod
                   , yesod-static
+                  , persistent
+                  , persistent-template
+                  , persistent-sqlite
                   , text
 
   ghc-options:    -fwarn-tabs -threaded -O2 -rtsopts -with-rtsopts=-N

@@ -1,5 +1,6 @@
 module TS.Logic where
 import TS.Utils
+import Data.List
 
 filterChars :: String -> String
 filterChars = concat . intersperse " " . splitOnAny filtered
@@ -16,8 +17,8 @@ caesarShift sft = map ((drop (sft `mod` length ascii) (cycle ascii) !!) . subtra
 seniorSort :: [Student] -> [Student]
 seniorSort = sortBy sortByGrade . reverse . nub . reverse
  where sortByGrade sdnt1 sdnt2
-        |grade sdnt1 < grade sdnt2 = GT
-        |grade sdnt1 > grade sdnt2 = LT
+        |studentGrade sdnt1 < studentGrade sdnt2 = GT
+        |studentGrade sdnt1 > studentGrade sdnt2 = LT
         |otherwise                 = EQ
 
 updateAL al key val = case lookup key al of
@@ -32,8 +33,8 @@ placeStudents clubMap (x:xs) result@(clubMbrs, unRes)
   |length clubMLst < snd (fromJust $ lookup (head chx) clubMap) =
       placeStudents clubMap xs (updateAL clubMbrs (head chx) (clubMLst ++ [x]), unRes)
   |otherwise =
-      placeStudents clubMap (Student (name x) (grade x) (drop 1 chx):xs) result
-      where chx = choices x
+      placeStudents clubMap (Student (studentName x) (studentGrade x) (drop 1 chx):xs) result
+      where chx = studentChoices x
             clubMLst = fromJust $ lookup (head chx) clubMbrs
 
 sortAll sdntLst clubMap = postSort clubMap $ placeStudents clubMap (seniorSort sdntLst) (zip (map fst clubMap) (repeat []),[])

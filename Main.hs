@@ -80,8 +80,7 @@ getHomeR = defaultLayout $ do
         homePage
 
 main :: IO ()
-main = do
+main = runStderrLoggingT $ withSqlitePool "SdntDB.sqlite3" openConnectionCount $ \pool -> liftIO $ do
+    runResourceT $ runSqlPool (runMigration migrateAll) pool
     res <- static "Resources/"
-    clubLst <- decodeFile "Resources/clubData.yaml"
-    clubMap <- newIORef (clubsToMap $ fromJust clubLst)
-    warp 80 TS {clubM = clubMap, src = res}
+    warp 80 TS {connPool = pool, src = res}

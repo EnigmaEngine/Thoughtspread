@@ -19,11 +19,11 @@ resultsPage sdntDat cMap = do
                 $if null (members club)
                 $else
                     <h2> #{club}:
-                    $forall (n, g) <- zip (map name $ members club) (map grade $ members club)
+                    $forall (n, g) <- zip (map studentName $ members club) (map studentGrade $ members club)
                         <p> #{n}, #{g}th
             $if null unresolved
             $else
                 <h2> Unresolved:
-                $forall (un, ug) <- zip (map name unresolved) (map grade unresolved)
+                $forall (un, ug) <- zip (map studentName unresolved) (map studentGrade unresolved)
                     <p> #{un}, #{ug}th
 |]

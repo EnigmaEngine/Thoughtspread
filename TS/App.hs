@@ -16,17 +16,29 @@ data TS = TS {src :: Static, connPool :: ConnectionPool}
 openConnectionCount = 4
 
 --Data Types
---Add clubMap rather than club, use nestled types?
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Student
     name Text
     grade Int
-    choices [Text]
+    peak Peak
+    choices [Club]
+    club Club
+    nominations [(Int, Award)]
+    awards [Award]
+    hours Int
     deriving Show Read
 Club
     name Text
     minSize Int
     maxSize Int
+    deriving Show Read Eq
+Peak
+    name Text
+    teacher Text
+    deriving Show Read Eq
+Award
+    title Text
+    blurb Text
     deriving Show Read Eq
 |]
 

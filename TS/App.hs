@@ -15,18 +15,15 @@ data TS = TS {src :: Static, connPool :: ConnectionPool}
 --Constants
 openConnectionCount = 4
 
+--Type Synonyms
+type Nominations = [(Int, Award)]
+
 --Data Types
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-Student
-    name Text
-    grade Int
-    peak Peak
-    choices [Club]
-    club Club
-    nominations [(Int, Award)]
-    awards [Award]
-    hours Int
-    deriving Show Read
+Award
+    title Text
+    blurb Text
+    deriving Show Read Eq
 Club
     name Text
     minSize Int
@@ -36,10 +33,16 @@ Peak
     name Text
     teacher Text
     deriving Show Read Eq
-Award
-    title Text
-    blurb Text
-    deriving Show Read Eq
+Student
+    name Text
+    grade Int
+    peak Peak
+    choices [Club]
+    club Club
+    nominations Nominations
+    awards [Award]
+    hours Int
+    deriving Show Read
 |]
 
 type Result = ([(Text,[Student])], [Student])
@@ -63,7 +66,7 @@ instance FromJSON FStudent where
     parseJSON invalid = fail $ "Failed to parse: " ++ show invalid
 
 instance Eq Student where
-    (==) (Student n1 g1 _) (Student n2 g2 _) = n1 == n2 && g1 ==g2
+    (==) sdnt1 sdnt2 = studentName sdnt1 == studentName sdnt2 && studentGrade sdnt1 == studentGrade sdnt2
 
 mkYesodData "TS" [parseRoutes|
 / HomeR GET

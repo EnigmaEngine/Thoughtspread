@@ -4,9 +4,9 @@ import TS.Logic
 import TS.App
 import Yesod
 
-resultsPage :: [FStudent] -> ClubMap -> WidgetT TS IO ()
+resultsPage :: [ClubFStudent] -> ClubMap -> WidgetT TS IO ()
 resultsPage sdntDat cMap = do
-        let res = sortAll (map toStudent sdntDat) cMap
+        let res = sortAll (map updateStudentClubs sdntDat) cMap
             clubsl = map fst (fst res)
             unresolved = snd res
             members club = fromJust $ lookup club (fst res)

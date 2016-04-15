@@ -3,9 +3,9 @@ import TS.Utils
 import TS.App
 import Yesod
 
-studentForm :: [(Text, (Int,Int))] -> Html -> MForm Handler (FormResult FStudent, Widget)
+studentForm :: [(Text, (Int,Int))] -> Html -> MForm Handler (FormResult ClubFStudent, Widget)
 studentForm cMap =
-    renderDivs $ FStudent
+    renderDivs $ ClubFStudent
     <$> areq textField "Full Name: " Nothing
     <*> areq (selectFieldList grades) "Grade: " Nothing
     <*> areq (selectFieldList $ clubsToPairs cMap) "First Choice Club: " Nothing

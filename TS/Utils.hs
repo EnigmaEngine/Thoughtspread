@@ -1,7 +1,7 @@
 module TS.Utils
     ( module Export
     , Club(..)
-    , FStudent(..)
+    , ClubFStudent(..)
     , Student(..)
     , ClubMap
     , Result
@@ -10,7 +10,7 @@ module TS.Utils
     , clubsToPairs
     , grades
     , fromStudent
-    , toStudent
+    , updateStudentClubs
     , CSubmission(..)
     , opLst
     ) where
@@ -37,19 +37,20 @@ failYaml val = case val of
     Right x -> x
     Left _ -> []
 
-fromStudent :: Student -> FStudent
-fromStudent s = FStudent
+{-
+fromStudent :: Student -> ClubFStudent
+fromStudent s = ClubFStudent
     (studentName s)
     (studentGrade s)
     (studentChoices s !! 0)
     (studentChoices s !! 1)
     (studentChoices s !! 2)
+-}
 
-toStudent :: FStudent -> Student
-toStudent s = Student
-    (sN s)
-    (sG s)
-    [sC1 s, sC2 s, sC3 s]
+--updateStudentClubs :: ClubFStudent -> IO ()
+--Blegh, work on this part. It needs to update a student's club choices.
+updateStudentClubs (ClubFStudent cUpName cUpGrade cUpC1 cUpC2 cUpC3) sdnts =
+    where sdnt = head $ filter (\s -> studentName s == cUpName) sdnts
 
 clubsToMap :: [Club] -> ClubMap
 clubsToMap = map (\(Club n mn mx) -> (n,(mn,mx)))

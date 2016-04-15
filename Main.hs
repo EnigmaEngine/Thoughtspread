@@ -38,8 +38,8 @@ postPRASR = do
     clubMap <- liftIO $ readIORef clubM
     ((result, widget), enctype) <- runFormPost (studentForm clubMap)
     case result of
-        FormSuccess fStudent -> do
-            liftIO $ BS.appendFile "Resources/sdntData.yaml" (encode [fStudent])
+        FormSuccess ClubFStudent -> do
+            liftIO $ BS.appendFile "Resources/sdntData.yaml" (encode [ClubFStudent])
             defaultLayout $ do
                 praTheme
                 pracSubmitSuccess

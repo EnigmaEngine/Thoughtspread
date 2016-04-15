@@ -7,16 +7,25 @@ import Data.Text (Text, pack, unpack)
 import Yesod.Static
 import Yesod
 
+--Main Application Type
+data TS = TS {src :: Static, connPool :: ConnectionPool}
+
+--Routing
 staticFiles "Resources/"
 
---clubM :: IORef ClubMap
-data TS = TS {src :: Static, connPool :: ConnectionPool}
+mkYesodData "TS" [parseRoutes|
+/ HomeR GET
+/caesar CaesarR GET
+/caesar/result CResultR POST
+/praClubs PRAR GET
+/praClubs/submitted PRASR POST
+/praClubs/results PRARR GET
+/crazyYoYo YoYoR GET
+/src ResourceR Static src
+|]
 
 --Constants
 openConnectionCount = 4
-
---Type Synonyms
-type Nominations = [(Int, Award)]
 
 --Data Types
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
@@ -39,7 +48,7 @@ Student
     peak Peak
     choices [Club]
     club Club
-    nominations Nominations
+    nominations [Award]
     awards [Award]
     hours Int
     deriving Show Read
@@ -51,35 +60,30 @@ type ClubMap = [(Text, (Int,Int))]
 
 data CSubmission = CSubmission {operation :: Bool, msg :: Text, key :: Int}
 
-data FStudent = FStudent { sN  :: Text, sG  :: Int, sC1 :: Text, sC2 :: Text, sC3 :: Text}
+data ClubFStudent = ClubFStudent { sN  :: Text, sG  :: Int, sC1 :: Text, sC2 :: Text, sC3 :: Text}
 
 --Instances
 instance FromJSON Club where
     parseJSON (Object v) = Club <$> v .: "name" <*> v .: "minSize" <*> v .: "maxSize"
     parseJSON invalid = fail $ "Failed to parse: " ++ show invalid
 
-instance ToJSON FStudent where
-    toJSON (FStudent n g f s t) = object ["name" .= n, "grade" .= g, "1st" .= f, "2nd" .= s, "3rd" .= t]
+instance ToJSON ClubFStudent where
+    toJSON (ClubFStudent n g f s t) = object ["name" .= n, "grade" .= g, "1st" .= f, "2nd" .= s, "3rd" .= t]
 
-instance FromJSON FStudent where
-    parseJSON (Object v) = FStudent <$> v .: "name" <*> v .: "grade" <*> v .: "1st" <*> v .: "2nd" <*> v .: "3rd"
+instance FromJSON ClubFStudent where
+    parseJSON (Object v) = ClubFStudent <$> v .: "name" <*> v .: "grade" <*> v .: "1st" <*> v .: "2nd" <*> v .: "3rd"
     parseJSON invalid = fail $ "Failed to parse: " ++ show invalid
 
 instance Eq Student where
-    (==) sdnt1 sdnt2 = studentName sdnt1 == studentName sdnt2 && studentGrade sdnt1 == studentGrade sdnt2
-
-mkYesodData "TS" [parseRoutes|
-/ HomeR GET
-/caesar CaesarR GET
-/caesar/result CResultR POST
-/praClubs PRAR GET
-/praClubs/submitted PRASR POST
-/praClubs/results PRARR GET
-/crazyYoYo YoYoR GET
-/src ResourceR Static src
-|]
+    (==) sdnt1 sdnt2 = studentName sdnt1 == studentName sdnt2
 
 instance Yesod TS
 
 instance RenderMessage TS FormMessage where
     renderMessage _ _ = defaultFormMessage
+
+instance YesodPersist TS where
+    type YesodPersistBackend TS = SqlBackend
+    runDB action = do
+        TS {..} <- getYesod
+        runSqlPool action connPool

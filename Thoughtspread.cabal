@@ -31,6 +31,7 @@ executable          Thoughtspread
                   , resourcet
                   , monad-logger
                   , bytestring
+                  , containers
                   , cryptohash
                   , blaze-markup
                   , yaml

@@ -18,7 +18,10 @@ import TS.Page.PRACResults
 --  2. Add award nomination functionality
 --  3. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
 --the DB and the new types associated with it 
---  4. Add admin password required for web-based management of the Student DB
+--  4. Clean code, trim away fat, reduce the program to it's core, annihilate clutter. Comment every function and type with an
+--explaination and purpose. If the function or type is unnecessary scrap it. If it would simplify the program to merge or
+--seperate out functionality, do so.
+--  5. Add admin password required for web-based management of the Student DB
 
 mkYesodDispatch "TS" [parseRoutes|
 / HomeR GET

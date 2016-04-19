@@ -9,8 +9,7 @@ module TS.Utils
     , clubsToMap
     , clubsToPairs
     , grades
-    , fromStudent
-    , updateStudentClubs
+    , fromEntities
     , CSubmission(..)
     , opLst
     ) where
@@ -37,20 +36,9 @@ failYaml val = case val of
     Right x -> x
     Left _ -> []
 
-{-
-fromStudent :: Student -> ClubFStudent
-fromStudent s = ClubFStudent
-    (studentName s)
-    (studentGrade s)
-    (studentChoices s !! 0)
-    (studentChoices s !! 1)
-    (studentChoices s !! 2)
--}
-
---updateStudentClubs :: ClubFStudent -> IO ()
---Blegh, work on this part. It needs to update a student's club choices.
-updateStudentClubs (ClubFStudent cUpName cUpGrade cUpC1 cUpC2 cUpC3) sdnts =
-    where sdnt = head $ filter (\s -> studentName s == cUpName) sdnts
+fromEntities :: [Entity a] -> [a]
+fromEntities = map fromEntity
+    where fromEntity (Entity _ x) = x
 
 clubsToMap :: [Club] -> ClubMap
 clubsToMap = map (\(Club n mn mx) -> (n,(mn,mx)))

@@ -30,12 +30,12 @@ placeStudents :: ClubMap -> [Student] -> Result -> Result
 placeStudents _ [] result = result
 placeStudents clubMap (x:xs) result@(clubMbrs, unRes)
   |length chx < 1 = placeStudents clubMap xs (clubMbrs, unRes ++ [x])
-  |length clubMLst < snd (fromJust $ lookup (head chx) clubMap) =
-      placeStudents clubMap xs (updateAL clubMbrs (head chx) (clubMLst ++ [x]), unRes)
+  |length clubMLst < snd (fromJust $ lookup (clubName $ head chx) clubMap) =
+      placeStudents clubMap xs (updateAL clubMbrs (clubName $ head chx) (clubMLst ++ [x]), unRes)
   |otherwise =
-      placeStudents clubMap (Student (studentName x) (studentGrade x) (drop 1 chx):xs) result
-      where chx = studentChoices x
-            clubMLst = fromJust $ lookup (head chx) clubMbrs
+      placeStudents clubMap (x {studentChoices = drop 1 chx}:xs) result
+      where chx = studentChoices x --Analyse what to do with the Club type, constider replacing the Text club name with the Club type.
+            clubMLst = fromJust $ lookup (clubName $ head chx) clubMbrs
 
 sortAll sdntLst clubMap = postSort clubMap $ placeStudents clubMap (seniorSort sdntLst) (zip (map fst clubMap) (repeat []),[])
 
@@ -50,4 +50,4 @@ postSort clubMap dat
             sdnts = concatMap snd clubDat
             effectedSdnts = concatMap snd smallClubs
             fltrOutLst xs res = foldl (\ res x -> filter (/= x) res) res xs
-            dropChoice (Student n g (x:xs)) = Student n g xs
+            dropChoice sdnt = sdnt{studentChoices = drop 1 (studentChoices sdnt)}

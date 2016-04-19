@@ -12,6 +12,14 @@ import TS.Page.YoYo
 import TS.Page.PRAC
 import TS.Page.PRACResults
 
+
+--TODO:
+--  1. Add functionality allowing the addition of Students to the database
+--  2. Add award nomination functionality
+--  3. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
+--the DB and the new types associated with it 
+--  4. Add admin password required for web-based management of the Student DB
+
 mkYesodDispatch "TS" [parseRoutes|
 / HomeR GET
 /caesar CaesarR GET
@@ -25,8 +33,10 @@ mkYesodDispatch "TS" [parseRoutes|
 
 getPRAR :: Handler Html
 getPRAR = do
-    TS {..} <- getYesod
-    clubMap <- liftIO $ readIORef clubM
+    --TS {..} <- getYesod
+    --clubMap <- liftIO $ readIORef clubM
+    clubs <- runDB $ selectList [] []
+    let clubMap = clubsToMap . fromEntities $ clubs
     f <- generateFormPost (studentForm clubMap)
     defaultLayout $ do
         praTheme
@@ -34,24 +44,30 @@ getPRAR = do
 
 postPRASR :: Handler Html
 postPRASR = do
-    TS {..} <- getYesod
-    clubMap <- liftIO $ readIORef clubM
+    --TS {..} <- getYesod
+    --clubMap <- liftIO $ readIORef clubM
+    clubs <- runDB $ selectList [] []
+    let clubMap = clubsToMap . fromEntities $ clubs
     ((result, widget), enctype) <- runFormPost (studentForm clubMap)
     case result of
-        FormSuccess ClubFStudent -> do
-            liftIO $ BS.appendFile "Resources/sdntData.yaml" (encode [ClubFStudent])
+        FormSuccess clubFStudent -> do
+            --Add DB update here
+            --liftIO $ BS.appendFile "Resources/sdntData.yaml" (encode [clubFStudent])
             defaultLayout $ do
                 praTheme
                 pracSubmitSuccess
 
 getPRARR :: Handler Html
 getPRARR = do
-    TS {..} <- getYesod
-    clubMap <- liftIO $ readIORef clubM
-    sdntData <- liftIO $ return . failYaml =<< decodeFileEither "Resources/sdntData.yaml"
+    --TS {..} <- getYesod
+    --clubMap <- liftIO $ readIORef clubM
+    rawSdnts <- runDB $ selectList [] []
+    clubs <- runDB $ selectList [] []
+    let sdnts = fromEntities $ rawSdnts
+        clubMap = clubsToMap . fromEntities $ clubs
     defaultLayout $ do
         praTheme
-        resultsPage sdntData clubMap
+        resultsPage sdnts clubMap
 
 getYoYoR :: Handler Html
 getYoYoR = defaultLayout $ do

@@ -25,9 +25,10 @@ mkYesodData "TS" [parseRoutes|
 |]
 
 --Constants
-openConnectionCount = 4
+openConnectionCount = 4 :: Int
 
 --Data Types
+--Add admin password hash to DB
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Award
     title Text

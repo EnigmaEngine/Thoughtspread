@@ -15,7 +15,7 @@ import TS.Page.PRACResults
 
 --TODO:
 --  1. Add functionality allowing the addition of Students to the database
---  2. Add award nomination functionality
+--  2. Add award nomination functionality. Use a search field and submit button to narrow down the students in the listbox. 
 --  3. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
 --the DB and the new types associated with it
 --  4. Clean code, trim away fat, reduce the program to it's core, annihilate clutter. Comment every function and type with an

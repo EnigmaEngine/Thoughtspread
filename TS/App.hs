@@ -17,9 +17,9 @@ mkYesodData "TS" [parseRoutes|
 / HomeR GET
 /caesar CaesarR GET
 /caesar/result CResultR POST
-/praClubs PRAR GET
-/praClubs/submitted PRASR POST
-/praClubs/results PRARR GET
+/praDB/ PRADBR GET POST
+/praDB/praClubs PRACR GET POST
+/praDB/praClubs/results PRACRR GET
 /crazyYoYo YoYoR GET
 /src ResourceR Static src
 |]

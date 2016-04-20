@@ -26,7 +26,7 @@ formWidget (widget, enctype) = do
     [whamlet|
       <div .formbox>
           <h1> Prospect Ridge Academy Club Signup
-          <form method=post action=@{PRASR} enctype=#{enctype}>
+          <form method=post action=@{PRACR} enctype=#{enctype}>
               ^{widget}
               <button>Submit
     |]

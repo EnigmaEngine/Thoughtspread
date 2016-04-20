@@ -17,7 +17,7 @@ import TS.Page.PRACResults
 --  1. Add functionality allowing the addition of Students to the database
 --  2. Add award nomination functionality
 --  3. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
---the DB and the new types associated with it 
+--the DB and the new types associated with it
 --  4. Clean code, trim away fat, reduce the program to it's core, annihilate clutter. Comment every function and type with an
 --explaination and purpose. If the function or type is unnecessary scrap it. If it would simplify the program to merge or
 --seperate out functionality, do so.
@@ -27,15 +27,21 @@ mkYesodDispatch "TS" [parseRoutes|
 / HomeR GET
 /caesar CaesarR GET
 /caesar/result CResultR POST
-/praClubs PRAR GET
-/praClubs/submitted PRASR POST
-/praClubs/results PRARR GET
+/praDB/ PRADBR GET POST
+/praDB/praClubs PRACR GET POST
+/praDB/praClubs/results PRACRR GET
 /crazyYoYo YoYoR GET
 /src ResourceR Static src
 |]
 
-getPRAR :: Handler Html
-getPRAR = do
+getPRADBR :: Handler Html
+getPRADBR = undefined
+
+postPRADBR :: Handler Html
+postPRADBR = undefined
+
+getPRACR :: Handler Html
+getPRACR = do
     --TS {..} <- getYesod
     --clubMap <- liftIO $ readIORef clubM
     clubs <- runDB $ selectList [] []
@@ -45,8 +51,8 @@ getPRAR = do
         praTheme
         formWidget f
 
-postPRASR :: Handler Html
-postPRASR = do
+postPRACR :: Handler Html
+postPRACR = do
     --TS {..} <- getYesod
     --clubMap <- liftIO $ readIORef clubM
     clubs <- runDB $ selectList [] []
@@ -60,8 +66,8 @@ postPRASR = do
                 praTheme
                 pracSubmitSuccess
 
-getPRARR :: Handler Html
-getPRARR = do
+getPRACRR :: Handler Html
+getPRACRR = do
     --TS {..} <- getYesod
     --clubMap <- liftIO $ readIORef clubM
     rawSdnts <- runDB $ selectList [] []
@@ -100,6 +106,6 @@ getHomeR = defaultLayout $ do
 
 main :: IO ()
 main = runStderrLoggingT $ withSqlitePool "SdntDB.sqlite3" openConnectionCount $ \pool -> liftIO $ do
-    runResourceT $ runSqlPool (runMigration migrateAll) pool
+    runResourceT $ runSqlPool (runMigrationSilent migrateAll) pool
     res <- static "Resources/"
     warp 80 TS {connPool = pool, src = res}

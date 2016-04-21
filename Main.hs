@@ -15,7 +15,7 @@ import TS.Page.PRACResults
 
 --TODO:
 --  1. Add functionality allowing the addition of Students to the database
---  2. Add award nomination functionality. Use a search field and submit button to narrow down the students in the listbox. 
+--  2. Add award nomination functionality. Use a search field and submit button to narrow down the students in the listbox.
 --  3. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
 --the DB and the new types associated with it
 --  4. Clean code, trim away fat, reduce the program to it's core, annihilate clutter. Comment every function and type with an
@@ -46,7 +46,7 @@ getPRACR = do
     --clubMap <- liftIO $ readIORef clubM
     clubs <- runDB $ selectList [] []
     let clubMap = clubsToMap . fromEntities $ clubs
-    f <- generateFormPost (studentForm clubMap)
+    f <- generateFormPost (studentClubForm clubMap)
     defaultLayout $ do
         praTheme
         formWidget f
@@ -57,7 +57,7 @@ postPRACR = do
     --clubMap <- liftIO $ readIORef clubM
     clubs <- runDB $ selectList [] []
     let clubMap = clubsToMap . fromEntities $ clubs
-    ((result, widget), enctype) <- runFormPost (studentForm clubMap)
+    ((result, widget), enctype) <- runFormPost (studentClubForm clubMap)
     case result of
         FormSuccess clubFStudent -> do
             --Add DB update here

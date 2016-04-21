@@ -36,6 +36,9 @@ failYaml val = case val of
     Right x -> x
     Left _ -> []
 
+toStudent :: FStudent -> Student
+toStudent (FStudent name num grade peak) = Student name num grade peak [] Nothing [] 0
+
 fromEntities :: [Entity a] -> [a]
 fromEntities = map fromEntity
     where fromEntity (Entity _ x) = x

@@ -1,4 +1,4 @@
-module TS.Page.PRAC where
+module TS.Page.PRADB where
 import TS.Utils
 import TS.App
 import Yesod

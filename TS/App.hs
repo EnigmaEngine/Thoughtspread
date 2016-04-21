@@ -4,6 +4,7 @@ import Database.Persist
 import Database.Persist.TH
 import Database.Persist.Sqlite
 import Data.Text (Text, pack, unpack)
+import qualified Data.Map as M
 import Yesod.Static
 import Yesod
 
@@ -27,12 +28,13 @@ mkYesodData "TS" [parseRoutes|
 --Constants
 openConnectionCount = 4 :: Int
 
+type Award = M.Map Text Text
+
 --Data Types
 --Add admin password hash to DB
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-Award
+Awards
     title Text
-    blurb Text
     deriving Show Read Eq
 Club
     name Text
@@ -45,11 +47,11 @@ Peak
     deriving Show Read Eq
 Student
     name Text
+    number Int
     grade Int
     peak Peak
     choices [Club]
-    club Club
-    nominations [Award]
+    club Club Maybe
     awards [Award]
     hours Int
     deriving Show Read
@@ -62,6 +64,8 @@ type ClubMap = [(Text, (Int,Int))]
 data CSubmission = CSubmission {operation :: Bool, msg :: Text, key :: Int}
 
 data ClubFStudent = ClubFStudent { sN  :: Text, sG  :: Int, sC1 :: Text, sC2 :: Text, sC3 :: Text}
+
+data FStudent = FStudent Text Int Int Peak
 
 --Instances
 instance FromJSON Club where

@@ -1,5 +1,4 @@
 #!/bin/sh
+# Revise the elm build command to be more general.
 elm make "Resources/Elm/YoYo.elm" --yes --output "Resources/yoyo.html"
-stack init --allow-different-user
-stack setup --allow-different-user
-stack build --allow-different-user
+stack build

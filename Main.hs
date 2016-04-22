@@ -11,17 +11,17 @@ import TS.Page.Caesar
 import TS.Page.YoYo
 import TS.Page.PRAC
 import TS.Page.PRACResults
+import TS.Page.PRADB
 
 
 --TODO:
---  1. Add functionality allowing the addition of Students to the database
---  2. Add award nomination functionality. Use a search field and submit button to narrow down the students in the listbox.
---  3. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
+--  1. Add award nomination functionality. Use a search field and submit button to narrow down the students in the listbox.
+--  2. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
 --the DB and the new types associated with it
---  4. Clean code, trim away fat, reduce the program to it's core, annihilate clutter. Comment every function and type with an
+--  3. Clean code, trim away fat, reduce the program to it's core, annihilate clutter. Comment every function and type with an
 --explaination and purpose. If the function or type is unnecessary scrap it. If it would simplify the program to merge or
 --seperate out functionality, do so.
---  5. Add admin password required for web-based management of the Student DB
+--  4. Add admin password required for web-based management of the Student DB
 
 mkYesodDispatch "TS" [parseRoutes|
 / HomeR GET
@@ -35,41 +35,49 @@ mkYesodDispatch "TS" [parseRoutes|
 |]
 
 getPRADBR :: Handler Html
-getPRADBR = undefined
+getPRADBR = do
+    rawPeaks <- runDB $ selectList [] []
+    let peaks = fromEntities $ rawPeaks
+    f <- generateFormPost (newStudentForm peaks)
+    defaultLayout $ do
+        praTheme
+        dbFormWidget f
 
 postPRADBR :: Handler Html
-postPRADBR = undefined
+postPRADBR = do
+    rawPeaks <- runDB $ selectList [] []
+    let peaks = fromEntities $ rawPeaks
+    ((result, widget), enctype) <- runFormPost (newStudentForm peaks)
+    case result of
+        FormSuccess fStudent -> do
+            runDB $ insert (toStudent fStudent)
+            defaultLayout $ do
+                praTheme
+                pradbSubmitSuccess
 
 getPRACR :: Handler Html
 getPRACR = do
-    --TS {..} <- getYesod
-    --clubMap <- liftIO $ readIORef clubM
     clubs <- runDB $ selectList [] []
     let clubMap = clubsToMap . fromEntities $ clubs
     f <- generateFormPost (studentClubForm clubMap)
     defaultLayout $ do
         praTheme
-        formWidget f
+        clubFormWidget f
 
 postPRACR :: Handler Html
 postPRACR = do
-    --TS {..} <- getYesod
-    --clubMap <- liftIO $ readIORef clubM
     clubs <- runDB $ selectList [] []
     let clubMap = clubsToMap . fromEntities $ clubs
     ((result, widget), enctype) <- runFormPost (studentClubForm clubMap)
     case result of
         FormSuccess clubFStudent -> do
             --Add DB update here
-            --liftIO $ BS.appendFile "Resources/sdntData.yaml" (encode [clubFStudent])
             defaultLayout $ do
                 praTheme
                 pracSubmitSuccess
 
 getPRACRR :: Handler Html
 getPRACRR = do
-    --TS {..} <- getYesod
-    --clubMap <- liftIO $ readIORef clubM
     rawSdnts <- runDB $ selectList [] []
     clubs <- runDB $ selectList [] []
     let sdnts = fromEntities $ rawSdnts

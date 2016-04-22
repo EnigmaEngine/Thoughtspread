@@ -14,6 +14,7 @@ executable          Thoughtspread
                   , TS.Page.YoYo
                   , TS.Page.PRAC
                   , TS.Page.PRACResults
+                  , TS.Page.PRADB
   extensions:       EmptyDataDecls
                   , FlexibleContexts
                   , FunctionalDependencies
@@ -34,7 +35,6 @@ executable          Thoughtspread
                   , containers
                   , cryptohash
                   , blaze-markup
-                  , yaml
                   , yesod
                   , yesod-static
                   , persistent

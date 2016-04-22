@@ -3,30 +3,30 @@ import TS.Utils
 import TS.App
 import Yesod
 
-studentClubForm :: [(Text, (Int,Int))] -> Html -> MForm Handler (FormResult ClubFStudent, Widget)
-studentClubForm cMap =
-    renderDivs $ ClubFStudent
-    <$> areq textField "Full Name: " Nothing
+newStudentForm :: [Peak] -> Html -> MForm Handler (FormResult FStudent, Widget)
+newStudentForm peaks =
+    renderDivs $ FStudent
+    <$> areq textField "First Name: " Nothing
+    <*> areq textField "Last Name: " Nothing
+    <*> areq intField "Student Number: " Nothing
     <*> areq (selectFieldList grades) "Grade: " Nothing
-    <*> areq (selectFieldList $ clubsToPairs cMap) "First Choice Club: " Nothing
-    <*> areq (selectFieldList $ clubsToPairs cMap) "Second Choice Club: " Nothing
-    <*> areq (selectFieldList $ clubsToPairs cMap) "Third Choice Club: " Nothing
+    <*> areq (selectFieldList $ peaksToPairs peaks) "Peak: " Nothing
 
-pracSubmitSuccess :: WidgetT TS IO ()
-pracSubmitSuccess = do
+pradbSubmitSuccess :: WidgetT TS IO ()
+pradbSubmitSuccess = do
     [whamlet|
       <div .results>
-          <h1> Prospect Ridge Academy Club Signup
+          <h1> Prospect Ridge Academy Student Database
           <h3> Form Submitted
-          <p> Your submission has been recieved! You're done!
+          <p> Your submission has been recieved and added to the database.
     |]
 
-formWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
-formWidget (widget, enctype) = do
+dbFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
+dbFormWidget (widget, enctype) = do
     [whamlet|
       <div .formbox>
-          <h1> Prospect Ridge Academy Club Signup
-          <form method=post action=@{PRACR} enctype=#{enctype}>
+          <h1> Prospect Ridge Academy Student Database
+          <form method=post action=@{PRADBR} enctype=#{enctype}>
               ^{widget}
               <button>Submit
     |]

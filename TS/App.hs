@@ -1,10 +1,8 @@
 module TS.App where
---import TS.Utils
 import Database.Persist
 import Database.Persist.TH
 import Database.Persist.Sqlite
 import Data.Text (Text, pack, unpack)
-import qualified Data.Map as M
 import Yesod.Static
 import Yesod
 
@@ -28,7 +26,9 @@ mkYesodData "TS" [parseRoutes|
 --Constants
 openConnectionCount = 4 :: Int
 
-type Award = M.Map Text Text
+--Type synonyms
+type Award = (Text,Text)
+type Name = (Text,Text)
 
 --Data Types
 --Add admin password hash to DB
@@ -46,7 +46,7 @@ Peak
     teacher Text
     deriving Show Read Eq
 Student
-    name Text
+    name Name
     number Int
     grade Int
     peak Peak
@@ -65,20 +65,9 @@ data CSubmission = CSubmission {operation :: Bool, msg :: Text, key :: Int}
 
 data ClubFStudent = ClubFStudent { sN  :: Text, sG  :: Int, sC1 :: Text, sC2 :: Text, sC3 :: Text}
 
-data FStudent = FStudent Text Int Int Peak
+data FStudent = FStudent Text Text Int Int Peak
 
 --Instances
-instance FromJSON Club where
-    parseJSON (Object v) = Club <$> v .: "name" <*> v .: "minSize" <*> v .: "maxSize"
-    parseJSON invalid = fail $ "Failed to parse: " ++ show invalid
-
-instance ToJSON ClubFStudent where
-    toJSON (ClubFStudent n g f s t) = object ["name" .= n, "grade" .= g, "1st" .= f, "2nd" .= s, "3rd" .= t]
-
-instance FromJSON ClubFStudent where
-    parseJSON (Object v) = ClubFStudent <$> v .: "name" <*> v .: "grade" <*> v .: "1st" <*> v .: "2nd" <*> v .: "3rd"
-    parseJSON invalid = fail $ "Failed to parse: " ++ show invalid
-
 instance Eq Student where
     (==) sdnt1 sdnt2 = studentName sdnt1 == studentName sdnt2
 

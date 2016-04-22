@@ -21,8 +21,8 @@ pracSubmitSuccess = do
           <p> Your submission has been recieved! You're done!
     |]
 
-formWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
-formWidget (widget, enctype) = do
+clubFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
+clubFormWidget (widget, enctype) = do
     [whamlet|
       <div .formbox>
           <h1> Prospect Ridge Academy Club Signup

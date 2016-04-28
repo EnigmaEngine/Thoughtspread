@@ -5,8 +5,9 @@ module TS.Utils
     , Student(..)
     , ClubMap
     , Result
-    , failYaml
     , clubsToMap
+    , concatName
+    , searchStudents
     , clubsToPairs
     , peaksToPairs
     , grades
@@ -18,7 +19,9 @@ module TS.Utils
 import Data.IORef as Export
 import Text.Blaze as Export
 import Data.Maybe as Export (fromJust)
-import Data.Text as Export (Text, pack, unpack, append)
+import Data.Text as Export (Text, pack, unpack, append, breakOnAll)
+import Data.Time.Calendar as Export
+import Data.Time as Export
 import Data.Char as Export
 import Yesod.Static as Export
 import Database.Persist as Export
@@ -27,14 +30,15 @@ import Database.Persist.Sqlite as Export
 import Control.Monad.Trans.Resource as Export (runResourceT)
 import Control.Monad.Logger as Export (runStderrLoggingT)
 
-import Control.Exception
+import qualified Data.Text as T
 import TS.App
 
 --Funtions
-failYaml :: Either t [t1] -> [t1]
-failYaml val = case val of
-    Right x -> x
-    Left _ -> []
+concatName :: Student -> Text
+concatName = (\(fn,ln) -> fn `append` " " `append` ln) . studentName
+
+searchStudents :: Text -> [Student] -> [Student]
+searchStudents q sdnts = filter ((\x -> length (breakOnAll (T.toLower q) x) > 0) . T.toLower . concatName) sdnts
 
 toStudent :: FStudent -> Student
 toStudent (FStudent fname lname num grade peak) = Student (fname,lname) num grade peak [] Nothing [] 0
@@ -55,6 +59,9 @@ peaksToPairs = map namePair
 
 grades :: [(Text, Int)]
 grades = zip (map (pack . (++"th Grade") . show) [9..12]) [9..12]
+
+months :: [(Text,Int)]
+months = zip ["January","February","March","April","May","June","July","August","September","October","November","December"] [1..12]
 
 opLst :: [(Text,Bool)]
 opLst = [("Encrypt",True),("Decrypt",False)]

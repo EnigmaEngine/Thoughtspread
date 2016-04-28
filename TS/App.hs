@@ -17,6 +17,8 @@ mkYesodData "TS" [parseRoutes|
 /caesar CaesarR GET
 /caesar/result CResultR POST
 /praDB/ PRADBR GET POST
+/praDB/search PRADBSR GET POST
+/praDB/award PRADBAR GET POST
 /praDB/praClubs PRACR GET POST
 /praDB/praClubs/results PRACRR GET
 /crazyYoYo YoYoR GET
@@ -27,10 +29,18 @@ mkYesodData "TS" [parseRoutes|
 openConnectionCount = 4 :: Int
 
 --Type synonyms
-type Award = (Text,Text)
 type Name = (Text,Text)
 
+type ClubMap = [(Text, (Int,Int))]
+
+type MonthYear = (Integer,Int)
+
 --Data Types
+
+data Award = Award Text Text MonthYear -- Title, Blurb, Year, Month
+    deriving (Show, Read, Eq)
+derivePersistField "Award"
+
 --Add admin password hash to DB
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Awards
@@ -59,19 +69,20 @@ Student
 
 type Result = ([(Text,[Student])], [Student])
 
-type ClubMap = [(Text, (Int,Int))]
-
 data CSubmission = CSubmission {operation :: Bool, msg :: Text, key :: Int}
 
+--Deprecated
 data ClubFStudent = ClubFStudent { sN  :: Text, sG  :: Int, sC1 :: Text, sC2 :: Text, sC3 :: Text}
 
 data FStudent = FStudent Text Text Int Int Peak
 
+data FSearch = FSearch Text
+
 --Instances
+instance Yesod TS
+
 instance Eq Student where
     (==) sdnt1 sdnt2 = studentName sdnt1 == studentName sdnt2
-
-instance Yesod TS
 
 instance RenderMessage TS FormMessage where
     renderMessage _ _ = defaultFormMessage

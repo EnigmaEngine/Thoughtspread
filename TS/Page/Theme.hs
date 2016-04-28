@@ -41,7 +41,7 @@ pageTheme = do
 
 praTheme :: WidgetT TS IO ()
 praTheme = do
-        setTitle "PRA Club Chooser"
+        setTitle "PRA Student Database"
         toWidgetHead
             [hamlet|<link rel="icon" type="image/x-icon" href="http://www.prospectridgeacademy.org/favicon.ico"/>|]
         toWidgetHead

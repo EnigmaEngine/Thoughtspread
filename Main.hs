@@ -12,7 +12,7 @@ import TS.Page.YoYo
 import TS.Page.PRAC
 import TS.Page.PRACResults
 import TS.Page.PRADB
-
+import TS.Page.PRADBSearch
 
 --TODO:
 --  1. Add award nomination functionality. Use a search field and submit button to narrow down the students in the listbox.
@@ -28,6 +28,8 @@ mkYesodDispatch "TS" [parseRoutes|
 /caesar CaesarR GET
 /caesar/result CResultR POST
 /praDB/ PRADBR GET POST
+/praDB/search PRADBSR GET POST
+/praDB/award PRADBAR GET POST
 /praDB/praClubs PRACR GET POST
 /praDB/praClubs/results PRACRR GET
 /crazyYoYo YoYoR GET
@@ -54,6 +56,30 @@ postPRADBR = do
             defaultLayout $ do
                 praTheme
                 pradbSubmitSuccess
+
+getPRADBSR :: Handler Html
+getPRADBSR = do
+    f <- generateFormPost dbSearchForm
+    defaultLayout $ do
+        praTheme
+        dbSearchFormWidget f
+
+postPRADBSR :: Handler Html
+postPRADBSR = do
+    rawSdnts <- runDB $ selectList [] []
+    let sdnts = fromEntities $ rawSdnts
+    ((result, widget), enctype) <- runFormPost dbSearchForm
+    case result of
+        FormSuccess (FSearch query) -> do
+            defaultLayout $ do
+                praTheme
+                dbSearchSubmitSuccess (searchStudents query sdnts)
+
+getPRADBAR :: Handler Html
+getPRADBAR = undefined
+
+postPRADBAR :: Handler Html
+postPRADBAR = undefined
 
 getPRACR :: Handler Html
 getPRACR = do

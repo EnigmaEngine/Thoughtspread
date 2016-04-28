@@ -60,6 +60,9 @@ peaksToPairs = map namePair
 grades :: [(Text, Int)]
 grades = zip (map (pack . (++"th Grade") . show) [9..12]) [9..12]
 
+awardsToPairs :: [Awards] -> [(Text,Text)]
+awardsToPairs = map ((\x -> (x,x)) . awardsTitle)
+
 months :: [(Text,Int)]
 months = zip ["January","February","March","April","May","June","July","August","September","October","November","December"] [1..12]
 

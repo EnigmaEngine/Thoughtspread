@@ -4,15 +4,14 @@ import TS.App
 import Yesod
 
 --Actually write this code...
-
-awardForm :: Awards -> MonthYear -> Html -> MForm Handler (FormResult FStudent, Widget)
-awardForm awards (year,month) =
-    renderDivs $ FStudent
-    <$> areq textField "First Name: " Nothing
-    <*> areq textField "Last Name: " Nothing
-    <*> areq intField "Student Number: " Nothing
-    <*> areq (selectFieldList grades) "Grade: " Nothing
-    <*> areq (selectFieldList $ peaksToPairs peaks) "Peak: " Nothing
+awardForm :: [Awards] -> [Student] -> MonthYear -> MForm Handler (FormResult FStudent, Widget)
+awardForm awards sdnts (year,month) =
+    renderDivs $ FAward
+    <$> areq (selectFieldList $ awardsToPairs awards) "Award: " Nothing
+    <*> areq (radioFieldList $ zip (map concatName sdnts) sdnts) "Student: " Nothing
+    <*> (unTextarea <$> areq textareaField "Blurb: " Nothing)
+    <*> areq (selectFieldList months) "Month Awarded: " (Just month)
+    <*> areq intField "Year Awarded: " (Just year)
 
 awardSubmitSuccess :: WidgetT TS IO ()
 awardSubmitSuccess = do

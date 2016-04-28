@@ -2,7 +2,7 @@ module TS.App where
 import Database.Persist
 import Database.Persist.TH
 import Database.Persist.Sqlite
-import Data.Text (Text, pack, unpack)
+import Data.Text (Text)
 import Yesod.Static
 import Yesod
 
@@ -75,6 +75,8 @@ data CSubmission = CSubmission {operation :: Bool, msg :: Text, key :: Int}
 data ClubFStudent = ClubFStudent { sN  :: Text, sG  :: Int, sC1 :: Text, sC2 :: Text, sC3 :: Text}
 
 data FStudent = FStudent Text Text Int Int Peak
+
+data FAward = FAward Text Student Text Int Integer
 
 data FSearch = FSearch Text
 

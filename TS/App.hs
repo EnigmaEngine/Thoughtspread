@@ -16,11 +16,14 @@ mkYesodData "TS" [parseRoutes|
 / HomeR GET
 /caesar CaesarR GET
 /caesar/result CResultR POST
-/praDB/ PRADBR GET POST
-/praDB/search PRADBSR GET POST
-/praDB/award PRADBAR GET POST
-/praDB/praClubs PRACR GET POST
-/praDB/praClubs/results PRACRR GET
+/praDB PRADBR GET
+/praDB/student/#Int PRADBStudentR GET
+/praDB/add PRADBAddR GET POST
+/praDB/search PRADBSearchR GET POST
+/praDB/award PRADBAwardSR GET POST
+/praDB/award/#Text PRADBAwardR GET POST
+/praDB/praClubs PRADBClubR GET POST
+/praDB/praClubs/results PRADBCResultR GET
 /crazyYoYo YoYoR GET
 /src ResourceR Static src
 |]
@@ -42,6 +45,8 @@ data Award = Award Text Text MonthYear -- Title, Blurb, Year, Month
 derivePersistField "Award"
 
 --Add admin password hash to DB
+--Possibly seperate out club choices into their own table. Along with nominations for awards.
+--Restructure so that student contains only pertinent information. Just a club name rather than the Club datatype?
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Awards
     title Text
@@ -71,8 +76,9 @@ type Result = ([(Text,[Student])], [Student])
 
 data CSubmission = CSubmission {operation :: Bool, msg :: Text, key :: Int}
 
---Deprecated
+--Deprecated--------------------------------------------------------------------------------------
 data ClubFStudent = ClubFStudent { sN  :: Text, sG  :: Int, sC1 :: Text, sC2 :: Text, sC3 :: Text}
+--------------------------------------------------------------------------------------------------
 
 data FStudent = FStudent Text Text Int Int Peak
 

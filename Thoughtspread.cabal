@@ -1,5 +1,5 @@
 name:               Thoughtspread
-version:            1.1.0
+version:            1.5.0
 cabal-version:      >= 1.8
 build-type:         Simple
 
@@ -12,10 +12,13 @@ executable          Thoughtspread
                   , TS.Page.Theme
                   , TS.Page.Caesar
                   , TS.Page.YoYo
-                  , TS.Page.PRAC
-                  , TS.Page.PRACResults
                   , TS.Page.PRADB
+                  , TS.Page.PRADBClub
+                  , TS.Page.PRADBCResult
+                  , TS.Page.PRADBAdd
                   , TS.Page.PRADBSearch
+                  , TS.Page.PRADBAward
+                  , TS.Page.PRADBStudent
   extensions:       EmptyDataDecls
                   , FlexibleContexts
                   , FunctionalDependencies
@@ -27,6 +30,7 @@ executable          Thoughtspread
                   , RecordWildCards
                   , TemplateHaskell
                   , TypeFamilies
+                  , ViewPatterns
                   , GADTs
   build-depends:    base
                   , transformers

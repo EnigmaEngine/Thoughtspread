@@ -1,4 +1,4 @@
-module TS.Page.PRACResults where
+module TS.Page.PRADBCResult where
 import TS.Utils
 import TS.Logic
 import TS.App

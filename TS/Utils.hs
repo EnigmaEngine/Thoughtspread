@@ -8,22 +8,29 @@ module TS.Utils
     , clubsToMap
     , concatName
     , searchStudents
+    , awardsToPairs
     , clubsToPairs
-    , peaksToPairs
+    , showPeak
     , grades
     , fromEntities
     , toStudent
     , CSubmission(..)
     , opLst
+    , monthPairs
+    , monthToName
     ) where
 import Data.IORef as Export
 import Text.Blaze as Export
 import Data.Maybe as Export (fromJust)
 import Data.Text as Export (Text, pack, unpack, append, breakOnAll)
+import Data.Tuple as Export (swap)
 import Data.Time.Calendar as Export
 import Data.Time as Export
 import Data.Char as Export
 import Yesod.Static as Export
+import Data.Time.Clock as Export
+import Data.Time.Calendar as Export
+import Data.Time.LocalTime as Export
 import Database.Persist as Export
 import Database.Persist.TH as Export
 import Database.Persist.Sqlite as Export
@@ -34,11 +41,11 @@ import qualified Data.Text as T
 import TS.App
 
 --Funtions
-concatName :: Student -> Text
-concatName = (\(fn,ln) -> fn `append` " " `append` ln) . studentName
+concatName :: Name -> Text
+concatName = (\(fn,ln) -> fn `append` " " `append` ln)
 
 searchStudents :: Text -> [Student] -> [Student]
-searchStudents q sdnts = filter ((\x -> length (breakOnAll (T.toLower q) x) > 0) . T.toLower . concatName) sdnts
+searchStudents q sdnts = filter ((\x -> length (breakOnAll (T.toLower q) x) > 0) . T.toLower . concatName . studentName) sdnts
 
 toStudent :: FStudent -> Student
 toStudent (FStudent fname lname num grade peak) = Student (fname,lname) num grade peak [] Nothing [] 0
@@ -53,9 +60,9 @@ clubsToMap = map (\(Club n mn mx) -> (n,(mn,mx)))
 clubsToPairs :: ClubMap -> [(Text, Text)]
 clubsToPairs clubLst = [(x,x) | x <- map fst clubLst]
 
-peaksToPairs :: [Peak] -> [(Text, Peak)]
-peaksToPairs = map namePair
-    where namePair p = ((peakName p) `append` " - " `append` (peakTeacher p),p)
+--Make a show instance?
+showPeak :: Peak -> Text
+showPeak p = (peakName p) `append` " - " `append` (peakTeacher p)
 
 grades :: [(Text, Int)]
 grades = zip (map (pack . (++"th Grade") . show) [9..12]) [9..12]
@@ -63,8 +70,11 @@ grades = zip (map (pack . (++"th Grade") . show) [9..12]) [9..12]
 awardsToPairs :: [Awards] -> [(Text,Text)]
 awardsToPairs = map ((\x -> (x,x)) . awardsTitle)
 
-months :: [(Text,Int)]
-months = zip ["January","February","March","April","May","June","July","August","September","October","November","December"] [1..12]
+monthPairs :: [(Text,Int)]
+monthPairs = zip ["January","February","March","April","May","June","July","August","September","October","November","December"] [1..12]
+
+monthToName :: Int -> Text
+monthToName n = fromJust $ lookup n (map swap monthPairs)
 
 opLst :: [(Text,Bool)]
 opLst = [("Encrypt",True),("Decrypt",False)]

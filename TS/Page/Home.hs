@@ -10,5 +10,8 @@ homePage :: WidgetT TS IO()
 homePage = [whamlet|
             <div .mTheme>
                 <h1>Welcome to Thoughtspread!
-                <h4><a href=@{CaesarR}>String Encryption
-                <h4><a href=@{YoYoR}>Crazy YoYo|]
+                <a href=@{CaesarR}>
+                    <h4> String Encryption
+                <a href=@{YoYoR}>
+                    <h4> Crazy YoYo
+|]

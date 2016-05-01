@@ -9,10 +9,13 @@ import TS.Page.Theme
 import TS.Page.Home
 import TS.Page.Caesar
 import TS.Page.YoYo
-import TS.Page.PRAC
-import TS.Page.PRACResults
 import TS.Page.PRADB
+import TS.Page.PRADBClub
+import TS.Page.PRADBCResult
+import TS.Page.PRADBAdd
 import TS.Page.PRADBSearch
+import TS.Page.PRADBAward
+import TS.Page.PRADBStudent
 
 --TODO:
 --  1. Add award nomination functionality. Use a search field and submit button to narrow down the students in the listbox.
@@ -23,33 +26,52 @@ import TS.Page.PRADBSearch
 --seperate out functionality, do so.
 --  4. Add admin password required for web-based management of the Student DB
 
+--Add /praDB/student show all students page.
 mkYesodDispatch "TS" [parseRoutes|
 / HomeR GET
 /caesar CaesarR GET
 /caesar/result CResultR POST
-/praDB/ PRADBR GET POST
-/praDB/search PRADBSR GET POST
-/praDB/award PRADBAR GET POST
-/praDB/praClubs PRACR GET POST
-/praDB/praClubs/results PRACRR GET
+/praDB PRADBR GET
+/praDB/student/#Int PRADBStudentR GET
+/praDB/add PRADBAddR GET POST
+/praDB/search PRADBSearchR GET POST
+/praDB/award PRADBAwardSR GET POST
+/praDB/award/#Text PRADBAwardR GET POST
+/praDB/praClubs PRADBClubR GET POST
+/praDB/praClubs/results PRADBCResultR GET
 /crazyYoYo YoYoR GET
 /src ResourceR Static src
 |]
 
+getHomeR :: Handler Html
+getHomeR = defaultLayout $ do
+        pageTheme
+        homePage
+
 getPRADBR :: Handler Html
-getPRADBR = do
-    rawPeaks <- runDB $ selectList [] []
-    let peaks = fromEntities $ rawPeaks
-    f <- generateFormPost (newStudentForm peaks)
+getPRADBR = defaultLayout $ do
+        praTheme
+        dbHomePage
+
+getPRADBStudentR :: Int -> Handler Html
+getPRADBStudentR sn = do
+    sdnt <- fromEntities <$> (runDB $ selectList [StudentNumber ==. sn] [])
+    defaultLayout $ do
+        praTheme
+        studentPage sdnt
+
+getPRADBAddR :: Handler Html
+getPRADBAddR = do
+    peaks <- fromEntities <$> (runDB $ selectList [] [])
+    f <- generateFormPost $ newStudentForm peaks
     defaultLayout $ do
         praTheme
         dbFormWidget f
 
-postPRADBR :: Handler Html
-postPRADBR = do
-    rawPeaks <- runDB $ selectList [] []
-    let peaks = fromEntities $ rawPeaks
-    ((result, widget), enctype) <- runFormPost (newStudentForm peaks)
+postPRADBAddR :: Handler Html
+postPRADBAddR = do
+    peaks <- fromEntities <$> (runDB $ selectList [] [])
+    ((result, widget), enctype) <- runFormPost $ newStudentForm peaks
     case result of
         FormSuccess fStudent -> do
             runDB $ insert (toStudent fStudent)
@@ -57,17 +79,16 @@ postPRADBR = do
                 praTheme
                 pradbSubmitSuccess
 
-getPRADBSR :: Handler Html
-getPRADBSR = do
+getPRADBSearchR :: Handler Html
+getPRADBSearchR = do
     f <- generateFormPost dbSearchForm
     defaultLayout $ do
         praTheme
         dbSearchFormWidget f
 
-postPRADBSR :: Handler Html
-postPRADBSR = do
-    rawSdnts <- runDB $ selectList [] []
-    let sdnts = fromEntities $ rawSdnts
+postPRADBSearchR :: Handler Html
+postPRADBSearchR = do
+    sdnts <- fromEntities <$> (runDB $ selectList [] [])
     ((result, widget), enctype) <- runFormPost dbSearchForm
     case result of
         FormSuccess (FSearch query) -> do
@@ -75,25 +96,62 @@ postPRADBSR = do
                 praTheme
                 dbSearchSubmitSuccess (searchStudents query sdnts)
 
-getPRADBAR :: Handler Html
-getPRADBAR = undefined
+getPRADBAwardSR :: Handler Html
+getPRADBAwardSR = do
+    f <- generateFormPost dbSearchForm
+    defaultLayout $ do
+        praTheme
+        awardSFormWidget f
 
-postPRADBAR :: Handler Html
-postPRADBAR = undefined
+postPRADBAwardSR :: Handler Html
+postPRADBAwardSR = do
+    ((result, widget), enctype) <- runFormPost dbSearchForm
+    case result of
+        FormSuccess (FSearch query) -> do
+            defaultLayout $ do
+                praTheme
+                redirect (PRADBAwardR query)
 
-getPRACR :: Handler Html
-getPRACR = do
-    clubs <- runDB $ selectList [] []
-    let clubMap = clubsToMap . fromEntities $ clubs
+getPRADBAwardR :: Text -> Handler Html
+getPRADBAwardR query = do
+    now <- liftIO getCurrentTime
+    timezone <- liftIO getCurrentTimeZone
+    let (y, m, _) = toGregorian $ localDay $ utcToLocalTime timezone now
+    sdnts <- (searchStudents query . fromEntities) <$> (runDB $ selectList [] [])
+    awards <- fromEntities <$> (runDB $ selectList [] [])
+    f <- generateFormPost $ awardForm awards sdnts (y, m)
+    defaultLayout $ do
+        praTheme
+        awardFormWidget f query
+
+postPRADBAwardR :: Text -> Handler Html
+postPRADBAwardR query = do
+    now <- liftIO getCurrentTime
+    timezone <- liftIO getCurrentTimeZone
+    let (y, m, _) = toGregorian $ localDay $ utcToLocalTime timezone now
+    sdnts <- (searchStudents query . fromEntities) <$> (runDB $ selectList [] [])
+    awards <- fromEntities <$> (runDB $ selectList [] [])
+    --Does runFormPost really need all of the form parameters again?
+    ((result, widget), enctype) <- runFormPost $ awardForm awards sdnts (y, m)
+    case result of
+        FormSuccess (FAward title sdnt blurb month year) -> do
+            let newStudentAwards = (Award title blurb (year,month)) : (studentAwards sdnt)
+            runDB $ updateWhere [StudentNumber ==. (studentNumber sdnt)] [StudentAwards =. newStudentAwards]
+            defaultLayout $ do
+                praTheme
+                awardSubmitSuccess title (concatName $ studentName sdnt)
+
+getPRADBClubR :: Handler Html
+getPRADBClubR = do
+    clubMap <- (clubsToMap . fromEntities) <$> (runDB $ selectList [] [])
     f <- generateFormPost (studentClubForm clubMap)
     defaultLayout $ do
         praTheme
         clubFormWidget f
 
-postPRACR :: Handler Html
-postPRACR = do
-    clubs <- runDB $ selectList [] []
-    let clubMap = clubsToMap . fromEntities $ clubs
+postPRADBClubR :: Handler Html
+postPRADBClubR = do
+    clubMap <- (clubsToMap . fromEntities) <$> (runDB $ selectList [] [])
     ((result, widget), enctype) <- runFormPost (studentClubForm clubMap)
     case result of
         FormSuccess clubFStudent -> do
@@ -102,12 +160,10 @@ postPRACR = do
                 praTheme
                 pracSubmitSuccess
 
-getPRACRR :: Handler Html
-getPRACRR = do
-    rawSdnts <- runDB $ selectList [] []
-    clubs <- runDB $ selectList [] []
-    let sdnts = fromEntities $ rawSdnts
-        clubMap = clubsToMap . fromEntities $ clubs
+getPRADBCResultR :: Handler Html
+getPRADBCResultR = do
+    sdnts <- fromEntities <$> (runDB $ selectList [] [])
+    clubMap <- (clubsToMap . fromEntities) <$> (runDB $ selectList [] [])
     defaultLayout $ do
         praTheme
         resultsPage sdnts clubMap
@@ -132,11 +188,6 @@ postCResultR = do
             defaultLayout $ do
                 pageTheme
                 caesarSubmitSuccess sub
-
-getHomeR :: Handler Html
-getHomeR = defaultLayout $ do
-        pageTheme
-        homePage
 
 main :: IO ()
 main = runStderrLoggingT $ withSqlitePool "SdntDB.sqlite3" openConnectionCount $ \pool -> liftIO $ do

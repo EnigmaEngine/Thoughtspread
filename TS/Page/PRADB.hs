@@ -1,32 +1,20 @@
 module TS.Page.PRADB where
+import TS.Logic
 import TS.Utils
 import TS.App
 import Yesod
 
-newStudentForm :: [Peak] -> Html -> MForm Handler (FormResult FStudent, Widget)
-newStudentForm peaks =
-    renderDivs $ FStudent
-    <$> areq textField "First Name: " Nothing
-    <*> areq textField "Last Name: " Nothing
-    <*> areq intField "Student Number: " Nothing
-    <*> areq (selectFieldList grades) "Grade: " Nothing
-    <*> areq (selectFieldList $ peaksToPairs peaks) "Peak: " Nothing
+--Add a random splash to each page load
 
-pradbSubmitSuccess :: WidgetT TS IO ()
-pradbSubmitSuccess = do
-    [whamlet|
-      <div .results>
-          <h1> Prospect Ridge Academy Student Database
-          <h3> Form Submitted
-          <p> Your submission has been recieved and added to the database.
-    |]
-
-dbFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
-dbFormWidget (widget, enctype) = do
-    [whamlet|
-      <div .formbox>
-          <h1> Prospect Ridge Academy Student Database
-          <form method=post action=@{PRADBR} enctype=#{enctype}>
-              ^{widget}
-              <button>Submit
-    |]
+dbHomePage :: WidgetT TS IO()
+dbHomePage = [whamlet|
+                <div .results>
+                    <h1> Prospect Ridge Academy Student Database
+                    <a href=@{PRADBAddR}>
+                        <h4> Add Students
+                    <a href=@{PRADBSearchR}>
+                        <h4> Search Students
+                    <a href=@{PRADBAwardSR}>
+                        <h4> Award Students
+                    <h4> Clubs Picker and Community Service Tracker (Coming Soon)
+|]

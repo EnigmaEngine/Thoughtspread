@@ -1,4 +1,4 @@
-module TS.Page.PRAC where
+module TS.Page.PRADBClub where
 import TS.Utils
 import TS.App
 import Yesod
@@ -26,7 +26,7 @@ clubFormWidget (widget, enctype) = do
     [whamlet|
       <div .formbox>
           <h1> Prospect Ridge Academy Club Signup
-          <form method=post action=@{PRACR} enctype=#{enctype}>
+          <form method=post action=@{PRADBClubR} enctype=#{enctype}>
               ^{widget}
               <button>Submit
     |]

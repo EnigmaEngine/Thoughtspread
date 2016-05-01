@@ -1,21 +1,19 @@
-module TS.Page.PRADBAwards where
+module TS.Page.PRADBAdd where
 import TS.Utils
 import TS.App
 import Yesod
 
---Actually write this code...
-
-awardForm :: Awards -> MonthYear -> Html -> MForm Handler (FormResult FStudent, Widget)
-awardForm awards (year,month) =
+newStudentForm :: [Peak] -> Html -> MForm Handler (FormResult FStudent, Widget)
+newStudentForm peaks =
     renderDivs $ FStudent
     <$> areq textField "First Name: " Nothing
     <*> areq textField "Last Name: " Nothing
     <*> areq intField "Student Number: " Nothing
     <*> areq (selectFieldList grades) "Grade: " Nothing
-    <*> areq (selectFieldList $ peaksToPairs peaks) "Peak: " Nothing
+    <*> areq (selectFieldList $ zip (map showPeak peaks) peaks) "Peak: " Nothing
 
-awardSubmitSuccess :: WidgetT TS IO ()
-awardSubmitSuccess = do
+pradbSubmitSuccess :: WidgetT TS IO ()
+pradbSubmitSuccess = do
     [whamlet|
       <div .results>
           <h1> Prospect Ridge Academy Student Database
@@ -23,12 +21,12 @@ awardSubmitSuccess = do
           <p> Your submission has been recieved and added to the database.
     |]
 
-awardFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
-awardFormWidget (widget, enctype) = do
+dbFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
+dbFormWidget (widget, enctype) = do
     [whamlet|
       <div .formbox>
           <h1> Prospect Ridge Academy Student Database
-          <form method=post action=@{PRADBR} enctype=#{enctype}>
+          <form method=post action=@{PRADBAddR} enctype=#{enctype}>
               ^{widget}
               <button>Submit
     |]

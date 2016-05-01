@@ -53,7 +53,7 @@ praTheme = do
                     margin: auto;
                     width: 60%;
                     text-align: center;
-                    font-family: "Comic Sans MS", cursive, sans-serif;
+                    font-family: sans-serif;
                     background-color: rgba(85, 85, 85, 0.4);
                     border: 10px groove gold;
                     padding: 10px;
@@ -63,9 +63,17 @@ praTheme = do
                 }
                 .formbox {
                     line-height: 200%;
-                    label, input, select {
-                        width: 200px;
+                    label, input, select, textarea {
+                        margin: auto;
+                        width: 20%;
                         display: inline-block;
+                    }
+                    textarea {
+                        resize: none;
+                        height: 5em;
+                    }
+                    .required *,.optional * {
+                        vertical-align: middle;
                     }
                 }
             |]

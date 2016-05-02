@@ -3,12 +3,54 @@ import TS.Utils
 import TS.App
 import Yesod
 
---Actually write this code...
+awardHomePage :: WidgetT TS IO()
+awardHomePage = [whamlet|
+            <div .results>
+                <h1> Prospect Ridge Academy Student Database
+                <a href=@{PRADBAwardSR}>
+                    <h4> Award an Award
+                <a href=@{PRADBShowAR}>
+                    <h4> See Monthly Awards
+|]
+
+showAwardsForm :: MonthYear -> Html -> MForm Handler (FormResult FMonth, Widget)
+showAwardsForm (year,month) =
+    renderDivs $ FMonth
+    <$> areq (selectFieldList monthPairs) "Month: " (Just month)
+    <*> areq intField "Year: " (Just year)
+
+showAwardsSubmitSuccess :: [Awards] -> [Student] -> MonthYear -> WidgetT TS IO ()
+showAwardsSubmitSuccess awards sdnts date@(year,month) = do
+    [whamlet|
+      <div .results>
+          <h1> Awards for #{monthToName month}, #{show year}
+          <p> This page lists all students who have recieved an award this month.
+          $forall award <- map awardsTitle awards
+              $with sdntLst <- monthlyAwards award date sdnts
+                  $if null sdntLst
+                  $else
+                      <h3> #{award}
+                      $forall (Student name num grade _ _ _ _ _) <- sdntLst
+                          <a href=@{PRADBStudentR num}>
+                              <p>#{concatName name}, #{grade}th
+|]
+
+showAwardsFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
+showAwardsFormWidget (widget, enctype) = do
+    [whamlet|
+      <div .formbox>
+          <h1> Prospect Ridge Academy Student Database
+          <p> Enter the month and year of the awards you would like to view.
+          <form method=post action=@{PRADBShowAR} enctype=#{enctype}>
+              ^{widget}
+              <button>Search
+    |]
+
 awardForm :: [Awards] -> [Student] -> MonthYear -> Html -> MForm Handler (FormResult FAward, Widget)
 awardForm awards sdnts (year,month) =
     renderDivs $ FAward
     <$> areq (selectFieldList $ awardsToPairs awards) "Award: " Nothing
-    <*> areq (selectFieldList $ zip (map (concatName . studentName) sdnts) sdnts) "Student: " Nothing
+    <*> areq (selectFieldList $ studentsToPairs sdnts) "Student: " Nothing
     <*> (unTextarea <$> areq textareaField "Blurb: " Nothing)
     <*> areq (selectFieldList monthPairs) "Month Awarded: " (Just month)
     <*> areq intField "Year Awarded: " (Just year)
@@ -24,22 +66,23 @@ awardSubmitSuccess title sdnt = do
 
 --Yes, these funtions are repetitive. Parameterize the "action" URL?
 
-awardSFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
-awardSFormWidget (widget, enctype) = do
-    [whamlet|
-      <div .formbox>
-          <h1> Prospect Ridge Academy Student Database
-          <form method=post action=@{PRADBAwardSR} enctype=#{enctype}>
-              ^{widget}
-              <button>Submit
-    |]
-
 awardFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> Text -> WidgetT TS IO ()
 awardFormWidget (widget, enctype) query = do
     [whamlet|
       <div .formbox>
           <h1> Prospect Ridge Academy Student Database
-          <form method=post action=@{PRADBAwardR query} enctype=#{enctype}>
+          <form method=post action=@{PRADBAAwardR query} enctype=#{enctype}>
               ^{widget}
               <button>Submit
+    |]
+
+awardSFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()
+awardSFormWidget (widget, enctype) = do
+    [whamlet|
+      <div .formbox>
+          <h1> Prospect Ridge Academy Student Database
+          <p> Enter the name of, or part of the name of, the student you would like to nominate.
+          <form method=post action=@{PRADBAwardSR} enctype=#{enctype}>
+              ^{widget}
+              <button>Search
     |]

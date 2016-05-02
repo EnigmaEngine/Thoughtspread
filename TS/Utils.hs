@@ -9,6 +9,7 @@ module TS.Utils
     , concatName
     , searchStudents
     , awardsToPairs
+    , studentsToPairs
     , clubsToPairs
     , showPeak
     , grades
@@ -18,6 +19,8 @@ module TS.Utils
     , opLst
     , monthPairs
     , monthToName
+    , toMonthYear
+    , monthlyAwards
     ) where
 import Data.IORef as Export
 import Text.Blaze as Export
@@ -69,6 +72,16 @@ grades = zip (map (pack . (++"th Grade") . show) [9..12]) [9..12]
 
 awardsToPairs :: [Awards] -> [(Text,Text)]
 awardsToPairs = map ((\x -> (x,x)) . awardsTitle)
+
+studentsToPairs :: [Student] -> [(Text,Student)]
+studentsToPairs sdnts = zip (map (concatName . studentName) sdnts) sdnts
+
+toMonthYear :: FMonth -> MonthYear
+toMonthYear (FMonth month year) = (year,month)
+
+monthlyAwards :: Text -> MonthYear -> [Student] -> [Student]
+monthlyAwards award date = filter (\sdnt -> (Award award "" date) `elem` (trimBlurbs $ studentAwards sdnt))
+    where trimBlurbs = map (\(Award title _ date) -> Award title "" date)
 
 monthPairs :: [(Text,Int)]
 monthPairs = zip ["January","February","March","April","May","June","July","August","September","October","November","December"] [1..12]

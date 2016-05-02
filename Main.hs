@@ -18,13 +18,13 @@ import TS.Page.PRADBAward
 import TS.Page.PRADBStudent
 
 --TODO:
---  1. Add award nomination functionality. Use a search field and submit button to narrow down the students in the listbox.
---  2. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
+--  1. After the bare minimum nomination functionality is in place, pause and restructure the whole program to operate around
 --the DB and the new types associated with it
---  3. Clean code, trim away fat, reduce the program to it's core, annihilate clutter. Comment every function and type with an
+--  2. Clean code, trim away fat, reduce the program to it's core, annihilate clutter. Comment every function and type with an
 --explaination and purpose. If the function or type is unnecessary scrap it. If it would simplify the program to merge or
 --seperate out functionality, do so.
---  4. Add admin password required for web-based management of the Student DB
+--  3. Add admin password required for web-based management of the Student DB.
+--  4. Add instructions to form widgets.
 
 --Add /praDB/student show all students page.
 mkYesodDispatch "TS" [parseRoutes|
@@ -35,8 +35,10 @@ mkYesodDispatch "TS" [parseRoutes|
 /praDB/student/#Int PRADBStudentR GET
 /praDB/add PRADBAddR GET POST
 /praDB/search PRADBSearchR GET POST
-/praDB/award PRADBAwardSR GET POST
-/praDB/award/#Text PRADBAwardR GET POST
+/praDB/award PRADBAwardR GET
+/praDB/award/show PRADBShowAR GET POST
+/praDB/award/add PRADBAwardSR GET POST
+/praDB/award/add/#Text PRADBAAwardR GET POST
 /praDB/praClubs PRADBClubR GET POST
 /praDB/praClubs/results PRADBCResultR GET
 /crazyYoYo YoYoR GET
@@ -52,6 +54,11 @@ getPRADBR :: Handler Html
 getPRADBR = defaultLayout $ do
         praTheme
         dbHomePage
+
+getPRADBAwardR :: Handler Html
+getPRADBAwardR = defaultLayout $ do
+        praTheme
+        awardHomePage
 
 getPRADBStudentR :: Int -> Handler Html
 getPRADBStudentR sn = do
@@ -96,6 +103,31 @@ postPRADBSearchR = do
                 praTheme
                 dbSearchSubmitSuccess (searchStudents query sdnts)
 
+getPRADBShowAR :: Handler Html
+getPRADBShowAR = do
+    now <- liftIO getCurrentTime
+    timezone <- liftIO getCurrentTimeZone
+    let (y, m, _) = toGregorian $ localDay $ utcToLocalTime timezone now
+    f <- generateFormPost $ showAwardsForm (y, m)
+    defaultLayout $ do
+        praTheme
+        showAwardsFormWidget f
+
+postPRADBShowAR :: Handler Html
+postPRADBShowAR = do
+    now <- liftIO getCurrentTime
+    timezone <- liftIO getCurrentTimeZone
+    let (y, m, _) = toGregorian $ localDay $ utcToLocalTime timezone now
+    sdnts <- fromEntities <$> (runDB $ selectList [] [])
+    awards <- fromEntities <$> (runDB $ selectList [] [])
+    --Does runFormPost really need all of the form parameters again?
+    ((result, widget), enctype) <- runFormPost $ showAwardsForm (y, m)
+    case result of
+        FormSuccess (FMonth month year) -> do
+            defaultLayout $ do
+                praTheme
+                showAwardsSubmitSuccess awards sdnts (year,month)
+
 getPRADBAwardSR :: Handler Html
 getPRADBAwardSR = do
     f <- generateFormPost dbSearchForm
@@ -110,10 +142,10 @@ postPRADBAwardSR = do
         FormSuccess (FSearch query) -> do
             defaultLayout $ do
                 praTheme
-                redirect (PRADBAwardR query)
+                redirect (PRADBAAwardR query)
 
-getPRADBAwardR :: Text -> Handler Html
-getPRADBAwardR query = do
+getPRADBAAwardR :: Text -> Handler Html
+getPRADBAAwardR query = do
     now <- liftIO getCurrentTime
     timezone <- liftIO getCurrentTimeZone
     let (y, m, _) = toGregorian $ localDay $ utcToLocalTime timezone now
@@ -124,8 +156,8 @@ getPRADBAwardR query = do
         praTheme
         awardFormWidget f query
 
-postPRADBAwardR :: Text -> Handler Html
-postPRADBAwardR query = do
+postPRADBAAwardR :: Text -> Handler Html
+postPRADBAAwardR query = do
     now <- liftIO getCurrentTime
     timezone <- liftIO getCurrentTimeZone
     let (y, m, _) = toGregorian $ localDay $ utcToLocalTime timezone now

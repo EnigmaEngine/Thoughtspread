@@ -20,8 +20,10 @@ mkYesodData "TS" [parseRoutes|
 /praDB/student/#Int PRADBStudentR GET
 /praDB/add PRADBAddR GET POST
 /praDB/search PRADBSearchR GET POST
-/praDB/award PRADBAwardSR GET POST
-/praDB/award/#Text PRADBAwardR GET POST
+/praDB/award PRADBAwardR GET
+/praDB/award/show PRADBShowAR GET
+/praDB/award/add PRADBAwardSR GET POST
+/praDB/award/add/#Text PRADBAAwardR GET POST
 /praDB/praClubs PRADBClubR GET POST
 /praDB/praClubs/results PRADBCResultR GET
 /crazyYoYo YoYoR GET
@@ -40,7 +42,7 @@ type MonthYear = (Integer,Int)
 
 --Data Types
 
-data Award = Award Text Text MonthYear -- Title, Blurb, Year, Month
+data Award = Award {title :: Text, blurb :: Text, month :: MonthYear}
     deriving (Show, Read, Eq)
 derivePersistField "Award"
 
@@ -85,6 +87,8 @@ data FStudent = FStudent Text Text Int Int Peak
 data FAward = FAward Text Student Text Int Integer
 
 data FSearch = FSearch Text
+
+data FMonth = FMonth Int Integer
 
 --Instances
 instance Yesod TS

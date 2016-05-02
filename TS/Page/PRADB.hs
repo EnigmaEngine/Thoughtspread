@@ -11,10 +11,10 @@ dbHomePage = [whamlet|
                 <div .results>
                     <h1> Prospect Ridge Academy Student Database
                     <a href=@{PRADBAddR}>
-                        <h4> Add Students
+                        <h4> Add Student
+                    <a href=@{PRADBAwardR}>
+                        <h4> Awards
                     <a href=@{PRADBSearchR}>
                         <h4> Search Students
-                    <a href=@{PRADBAwardSR}>
-                        <h4> Award Students
                     <h4> Clubs Picker and Community Service Tracker (Coming Soon)
 |]

@@ -1,4 +1,5 @@
 module TS.Page.PRADBAward where
+import Data.List
 import TS.Utils
 import TS.App
 import Yesod
@@ -19,21 +20,21 @@ showAwardsForm (year,month) =
     <$> areq (selectFieldList monthPairs) "Month: " (Just month)
     <*> areq intField "Year: " (Just year)
 
-showAwardsSubmitSuccess :: [Awards] -> [Student] -> MonthYear -> WidgetT TS IO ()
-showAwardsSubmitSuccess awards sdnts date@(year,month) = do
+showAwardsSubmitSuccess :: [Peak] -> [Student] -> MonthYear -> WidgetT TS IO ()
+showAwardsSubmitSuccess peaks sdnts date@(year,month) = do
     [whamlet|
       <div .results>
           <h1> Awards for #{monthToName month}, #{show year}
-          $forall award <- map awardsTitle awards
-              $with sdntLst <- monthlyAwards award date sdnts
+          $forall peak <- nub $ map peakName peaks
+              $with sdntLst <- monthlyAwards peak date sdnts
                   $if null sdntLst
                   $else
                       <hr>
-                      <h2> #{award}
+                      <h2> #{peak}
                       $forall (Student name num _ peak _ _ awardLst _) <- sdntLst
                           <a href=@{PRADBStudentR num} class=hidden>
-                              <h4>#{concatName name} - #{peakName peak}
-                          <p><i>"#{blurb $ getAward award date awardLst}"</i>
+                              <h4>#{concatName name} - #{title $ getAward date awardLst}
+                          <p><i>"#{blurb $ getAward date awardLst}"</i>
 |]
 
 showAwardsFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()

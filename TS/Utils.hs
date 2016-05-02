@@ -17,6 +17,7 @@ module TS.Utils
     , toStudent
     , CSubmission(..)
     , opLst
+    , getAward
     , monthPairs
     , monthToName
     , toMonthYear
@@ -82,6 +83,10 @@ toMonthYear (FMonth month year) = (year,month)
 monthlyAwards :: Text -> MonthYear -> [Student] -> [Student]
 monthlyAwards award date = filter (\sdnt -> (Award award "" date) `elem` (trimBlurbs $ studentAwards sdnt))
     where trimBlurbs = map (\(Award title _ date) -> Award title "" date)
+
+--Add multi-blurb support. Randomly pick a blurb in the case of duplicate awards.
+getAward :: Text -> MonthYear -> [Award] -> Award
+getAward award date = head . filter (\(Award a _ d) -> (a == award) && (d == date))
 
 monthPairs :: [(Text,Int)]
 monthPairs = zip ["January","February","March","April","May","June","July","August","September","October","November","December"] [1..12]

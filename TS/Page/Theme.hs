@@ -47,7 +47,22 @@ praTheme = do
         toWidgetHead
             [lucius|
                 body {
-                    background-image: url(@{ResourceR bgPattern_png});
+                    background-image: url(@{ResourceR bgPatternPRA_png});
+                }
+                hr {
+                    width: 40%;
+                    border-style: dashed;
+                    border-width: 2px;
+                }
+                a {
+                    text-decoration: none;
+                    color: darkblue;
+                }
+                a.hidden {
+                    color: black;
+                }
+                a.hidden:hover {
+                    color: darkblue;
                 }
                 .results, .formbox {
                     margin: auto;

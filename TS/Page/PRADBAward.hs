@@ -24,15 +24,16 @@ showAwardsSubmitSuccess awards sdnts date@(year,month) = do
     [whamlet|
       <div .results>
           <h1> Awards for #{monthToName month}, #{show year}
-          <p> This page lists all students who have recieved an award this month.
           $forall award <- map awardsTitle awards
               $with sdntLst <- monthlyAwards award date sdnts
                   $if null sdntLst
                   $else
-                      <h3> #{award}
-                      $forall (Student name num grade _ _ _ _ _) <- sdntLst
-                          <a href=@{PRADBStudentR num}>
-                              <p>#{concatName name}, #{grade}th
+                      <hr>
+                      <h2> #{award}
+                      $forall (Student name num _ peak _ _ awardLst _) <- sdntLst
+                          <a href=@{PRADBStudentR num} class=hidden>
+                              <h4>#{concatName name} - #{peakName peak}
+                          <p><i>"#{blurb $ getAward award date awardLst}"</i>
 |]
 
 showAwardsFormWidget :: (ToWidget TS w,ToMarkup e) => (w, e) -> WidgetT TS IO ()

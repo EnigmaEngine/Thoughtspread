@@ -81,12 +81,12 @@ toMonthYear :: FMonth -> MonthYear
 toMonthYear (FMonth month year) = (year,month)
 
 monthlyAwards :: Text -> MonthYear -> [Student] -> [Student]
-monthlyAwards award date = filter (\sdnt -> (Award award "" date) `elem` (trimBlurbs $ studentAwards sdnt))
-    where trimBlurbs = map (\(Award title _ date) -> Award title "" date)
+monthlyAwards peak date sdnts = filter (\sdnt -> date `elem` (map month $ studentAwards sdnt)) peakStudents
+    where peakStudents = filter (\sdnt -> (peakName $ studentPeak sdnt) == peak) sdnts
 
 --Add multi-blurb support. Randomly pick a blurb in the case of duplicate awards.
-getAward :: Text -> MonthYear -> [Award] -> Award
-getAward award date = head . filter (\(Award a _ d) -> (a == award) && (d == date))
+getAward :: MonthYear -> [Award] -> Award
+getAward date = head . filter (\(Award _ _ d) -> d == date)
 
 monthPairs :: [(Text,Int)]
 monthPairs = zip ["January","February","March","April","May","June","July","August","September","October","November","December"] [1..12]

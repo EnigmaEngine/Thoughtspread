@@ -119,14 +119,14 @@ postPRADBShowAR = do
     timezone <- liftIO getCurrentTimeZone
     let (y, m, _) = toGregorian $ localDay $ utcToLocalTime timezone now
     sdnts <- fromEntities <$> (runDB $ selectList [] [])
-    awards <- fromEntities <$> (runDB $ selectList [] [])
+    peaks <- fromEntities <$> (runDB $ selectList [] [])
     --Does runFormPost really need all of the form parameters again?
     ((result, widget), enctype) <- runFormPost $ showAwardsForm (y, m)
     case result of
         FormSuccess (FMonth month year) -> do
             defaultLayout $ do
                 praTheme
-                showAwardsSubmitSuccess awards sdnts (year,month)
+                showAwardsSubmitSuccess peaks sdnts (year,month)
 
 getPRADBAwardSR :: Handler Html
 getPRADBAwardSR = do

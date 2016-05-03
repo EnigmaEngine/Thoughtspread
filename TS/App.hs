@@ -14,24 +14,26 @@ staticFiles "Resources/"
 
 mkYesodData "TS" [parseRoutes|
 / HomeR GET
-/caesar CaesarR GET
-/caesar/result CResultR POST
+/crazyYoYo YoYoR GET
+/caesar CaesarR GET POST
 /praDB PRADBR GET
+/praDB/auth PRADBAuthR GET POST
+/praDB/auth/update PRADBAuthUR GET POST
 /praDB/student/#Int PRADBStudentR GET
 /praDB/add PRADBAddR GET POST
 /praDB/search PRADBSearchR GET POST
 /praDB/award PRADBAwardR GET
-/praDB/award/show PRADBShowAR GET
+/praDB/award/show PRADBShowAR GET POST
 /praDB/award/add PRADBAwardSR GET POST
 /praDB/award/add/#Text PRADBAAwardR GET POST
 /praDB/praClubs PRADBClubR GET POST
 /praDB/praClubs/results PRADBCResultR GET
-/crazyYoYo YoYoR GET
 /src ResourceR Static src
 |]
 
 --Constants
 openConnectionCount = 4 :: Int
+adminCookieTTL = 10 :: Int
 
 --Type synonyms
 type Name = (Text,Text)
@@ -46,10 +48,14 @@ data Award = Award {title :: Text, blurb :: Text, month :: MonthYear}
     deriving (Show, Read, Eq)
 derivePersistField "Award"
 
---Add admin password hash to DB
+--Make admin pass an Admin ByteString hash rather than plain text.
 --Possibly seperate out club choices into their own table. Along with nominations for awards.
 --Restructure so that student contains only pertinent information. Just a club name rather than the Club datatype?
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+Admin
+    user Text
+    pass Text
+    deriving Show Read Eq
 Awards
     title Text
     deriving Show Read Eq
@@ -86,12 +92,14 @@ data FStudent = FStudent Text Text Int Int Peak
 
 data FAward = FAward Text Student Text Int Integer
 
+--This is seriously stupid, get rid of it.
 data FSearch = FSearch Text
 
 data FMonth = FMonth Int Integer
 
 --Instances
-instance Yesod TS
+instance Yesod TS where
+    makeSessionBackend _ = Just <$> defaultClientSessionBackend adminCookieTTL "client_session_key.aes"
 
 instance Eq Student where
     (==) sdnt1 sdnt2 = studentName sdnt1 == studentName sdnt2

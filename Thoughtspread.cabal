@@ -1,5 +1,5 @@
 name:               Thoughtspread
-version:            1.6.0
+version:            1.7.0
 cabal-version:      >= 1.8
 build-type:         Simple
 
@@ -13,6 +13,7 @@ executable          Thoughtspread
                   , TS.Page.Caesar
                   , TS.Page.YoYo
                   , TS.Page.PRADB
+                  , TS.Page.PRADBAuth
                   , TS.Page.PRADBClub
                   , TS.Page.PRADBCResult
                   , TS.Page.PRADBAdd

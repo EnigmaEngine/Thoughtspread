@@ -26,7 +26,7 @@ caesarWidget (widget, enctype) = do
       <div .mTheme>
           <div .formTheme>
               <h1>Thoughtspread Caesar Encryption Widget
-              <form method=post action=@{CResultR} enctype=#{enctype}>
+              <form method=post action=@{CaesarR} enctype=#{enctype}>
                   ^{widget}
                   <button>Submit
     |]

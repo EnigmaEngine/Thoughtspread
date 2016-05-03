@@ -83,6 +83,10 @@ praTheme = do
                         width: 20%;
                         display: inline-block;
                     }
+                    .alert {
+                        color: darkred;
+                        line-height: 50%;
+                    }
                     textarea {
                         resize: none;
                         height: 5em;

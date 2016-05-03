@@ -10,6 +10,7 @@ import TS.Page.Home
 import TS.Page.Caesar
 import TS.Page.YoYo
 import TS.Page.PRADB
+import TS.Page.PRADBAuth
 import TS.Page.PRADBClub
 import TS.Page.PRADBCResult
 import TS.Page.PRADBAdd
@@ -29,9 +30,11 @@ import TS.Page.PRADBStudent
 --Add /praDB/student show all students page.
 mkYesodDispatch "TS" [parseRoutes|
 / HomeR GET
-/caesar CaesarR GET
-/caesar/result CResultR POST
+/crazyYoYo YoYoR GET
+/caesar CaesarR GET POST
 /praDB PRADBR GET
+/praDB/auth PRADBAuthR GET POST
+/praDB/auth/update PRADBAuthUR GET POST
 /praDB/student/#Int PRADBStudentR GET
 /praDB/add PRADBAddR GET POST
 /praDB/search PRADBSearchR GET POST
@@ -41,7 +44,6 @@ mkYesodDispatch "TS" [parseRoutes|
 /praDB/award/add/#Text PRADBAAwardR GET POST
 /praDB/praClubs PRADBClubR GET POST
 /praDB/praClubs/results PRADBCResultR GET
-/crazyYoYo YoYoR GET
 /src ResourceR Static src
 |]
 
@@ -55,6 +57,43 @@ getPRADBR = defaultLayout $ do
         praTheme
         dbHomePage
 
+getPRADBAuthR :: Handler Html
+getPRADBAuthR = do
+    admin <- fromEntities <$> (runDB $ selectList [] [])
+    f <- generateFormPost $ authPageForm admin
+    defaultLayout $ do
+        praTheme
+        authPageFormWidget f
+
+postPRADBAuthR :: Handler ()
+postPRADBAuthR = do
+    admin <- fromEntities <$> (runDB $ selectList [] [])
+    ((result, widget), enctype) <- runFormPost $ authPageForm admin
+    case result of
+        FormSuccess pass -> do
+            setSession "admin" "T"
+            redirectUltDest PRADBR
+        FormFailure (err:_) -> do
+            setMessage $ toHtml err
+            redirect PRADBAuthR
+
+getPRADBAuthUR :: Handler Html
+getPRADBAuthUR = do
+    f <- generateFormPost authUpdateForm
+    protectedPage $ defaultLayout $ do
+        praTheme
+        authUpdateFormWidget f
+
+postPRADBAuthUR :: Handler Html
+postPRADBAuthUR = do
+    ((result, widget), enctype) <- runFormPost authUpdateForm
+    case result of
+        FormSuccess pass -> do
+            runDB $ updateWhere [AdminUser ==. "admin"] [AdminPass =. pass]
+            defaultLayout $ do
+                praTheme
+                authUpdateSubmitSuccess
+
 getPRADBAwardR :: Handler Html
 getPRADBAwardR = defaultLayout $ do
         praTheme
@@ -63,7 +102,7 @@ getPRADBAwardR = defaultLayout $ do
 getPRADBStudentR :: Int -> Handler Html
 getPRADBStudentR sn = do
     sdnt <- fromEntities <$> (runDB $ selectList [StudentNumber ==. sn] [])
-    defaultLayout $ do
+    protectedPage $ defaultLayout $ do
         praTheme
         studentPage sdnt
 
@@ -71,7 +110,7 @@ getPRADBAddR :: Handler Html
 getPRADBAddR = do
     peaks <- fromEntities <$> (runDB $ selectList [] [])
     f <- generateFormPost $ newStudentForm peaks
-    defaultLayout $ do
+    protectedPage $ defaultLayout $ do
         praTheme
         dbFormWidget f
 
@@ -131,7 +170,7 @@ postPRADBShowAR = do
 getPRADBAwardSR :: Handler Html
 getPRADBAwardSR = do
     f <- generateFormPost dbSearchForm
-    defaultLayout $ do
+    protectedPage $ defaultLayout $ do
         praTheme
         awardSFormWidget f
 
@@ -152,7 +191,7 @@ getPRADBAAwardR query = do
     sdnts <- (searchStudents query . fromEntities) <$> (runDB $ selectList [] [])
     awards <- fromEntities <$> (runDB $ selectList [] [])
     f <- generateFormPost $ awardForm awards sdnts (y, m)
-    defaultLayout $ do
+    protectedPage $ defaultLayout $ do
         praTheme
         awardFormWidget f query
 
@@ -212,8 +251,8 @@ getCaesarR = do
         pageTheme
         caesarWidget f
 
-postCResultR :: Handler Html
-postCResultR = do
+postCaesarR :: Handler Html
+postCaesarR = do
     ((result, _), _) <- runFormPost caesarForm
     case result of
         FormSuccess sub ->

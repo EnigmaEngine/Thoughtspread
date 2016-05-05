@@ -53,7 +53,7 @@ getHomeR = defaultLayout $ do
         homePage
 
 getPRADBR :: Handler Html
-getPRADBR = defaultLayout $ do
+getPRADBR = protectedPage $ defaultLayout $ do
         praTheme
         dbHomePage
 
@@ -95,7 +95,7 @@ postPRADBAuthUR = do
                 authUpdateSubmitSuccess
 
 getPRADBAwardR :: Handler Html
-getPRADBAwardR = defaultLayout $ do
+getPRADBAwardR = protectedPage $ defaultLayout $ do
         praTheme
         awardHomePage
 
@@ -128,7 +128,7 @@ postPRADBAddR = do
 getPRADBSearchR :: Handler Html
 getPRADBSearchR = do
     f <- generateFormPost dbSearchForm
-    defaultLayout $ do
+    protectedPage $ defaultLayout $ do
         praTheme
         dbSearchFormWidget f
 
@@ -148,7 +148,7 @@ getPRADBShowAR = do
     timezone <- liftIO getCurrentTimeZone
     let (y, m, _) = toGregorian $ localDay $ utcToLocalTime timezone now
     f <- generateFormPost $ showAwardsForm (y, m)
-    defaultLayout $ do
+    protectedPage $ defaultLayout $ do
         praTheme
         showAwardsFormWidget f
 
@@ -235,7 +235,7 @@ getPRADBCResultR :: Handler Html
 getPRADBCResultR = do
     sdnts <- fromEntities <$> (runDB $ selectList [] [])
     clubMap <- (clubsToMap . fromEntities) <$> (runDB $ selectList [] [])
-    defaultLayout $ do
+    protectedPage $ defaultLayout $ do
         praTheme
         resultsPage sdnts clubMap
 

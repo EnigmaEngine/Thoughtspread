@@ -3,7 +3,7 @@ import TS.Utils
 import Data.List
 
 filterChars :: String -> String
-filterChars = concat . intersperse " " . splitOnAny filtered
+filterChars = unwords . splitOnAny filtered
     where filtered = ['\NUL'..'\US']
 
 splitOnAny :: Eq a => [a] -> [a] -> [[a]]

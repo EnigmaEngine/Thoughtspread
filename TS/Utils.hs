@@ -28,7 +28,6 @@ import Text.Blaze as Export
 import Data.Maybe as Export (fromJust)
 import Data.Text as Export (Text, pack, unpack, append, breakOnAll)
 import Data.Tuple as Export (swap)
-import Data.Time.Calendar as Export
 import Data.Time as Export
 import Data.Char as Export
 import Yesod.Static as Export
@@ -46,10 +45,10 @@ import TS.App
 
 --Funtions
 concatName :: Name -> Text
-concatName = (\(fn,ln) -> fn `append` " " `append` ln)
+concatName (fn, ln) = fn `append` " " `append` ln
 
 searchStudents :: Text -> [Student] -> [Student]
-searchStudents q sdnts = filter ((\x -> length (breakOnAll (T.toLower q) x) > 0) . T.toLower . concatName . studentName) sdnts
+searchStudents q = filter (not . null . breakOnAll (T.toLower q) . T.toLower . concatName . studentName)
 
 toStudent :: FStudent -> Student
 toStudent (FStudent fname lname num grade peak) = Student (fname,lname) num grade peak [] Nothing [] 0
@@ -66,7 +65,7 @@ clubsToPairs clubLst = [(x,x) | x <- map fst clubLst]
 
 --Make a show instance?
 showPeak :: Peak -> Text
-showPeak p = (peakName p) `append` " - " `append` (peakTeacher p)
+showPeak p = peakName p `append` " - " `append` peakTeacher p
 
 grades :: [(Text, Int)]
 grades = zip (map (pack . (++"th Grade") . show) [9..12]) [9..12]
@@ -81,8 +80,8 @@ toMonthYear :: FMonth -> MonthYear
 toMonthYear (FMonth month year) = (year,month)
 
 monthlyAwards :: Text -> MonthYear -> [Student] -> [Student]
-monthlyAwards peak date sdnts = filter (\sdnt -> date `elem` (map month $ studentAwards sdnt)) peakStudents
-    where peakStudents = filter (\sdnt -> (peakName $ studentPeak sdnt) == peak) sdnts
+monthlyAwards peak date sdnts = filter (\sdnt -> date `elem` map month (studentAwards sdnt)) peakStudents
+    where peakStudents = filter (\sdnt -> peakName (studentPeak sdnt) == peak) sdnts
 
 --Add multi-blurb support. Randomly pick a blurb in the case of duplicate awards.
 getAward :: MonthYear -> [Award] -> Award
